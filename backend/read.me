@@ -44,4 +44,27 @@ yazılmıştır.
 - `auth.test.js` (kullanıcı doğrulama testleri)  
 - `hotel.test.js` (otel işlemleri testleri)  
 - `reservation.test.js` (rezervasyon işlemleri testleri)
+------------------------------------------------------
+## Support ve Chat Modülleri
+
+Proje kapsamında canlı destek ve sohbet sistemi için aşağıdaki modüller oluşturulmuştur:
+
+### Support Modülü
+- Müşteri destek taleplerinin yönetimi,  
+- Destek taleplerinin oluşturulması, listelenmesi ve güncellenmesi,  
+- REST API endpointleri `supportRoutes.js` dosyasında tanımlanmıştır.
+
+### Chat Modülü
+- Gerçek zamanlı canlı sohbet ve mesajlaşma işlemleri,  
+- Socket.IO üzerinden anlık iletişim sağlanır,  
+- Mesajların modellenmesi `chatModel.js` ile yapılır,  
+- REST API üzerinden bazı chat işlemleri varsa `chatRoutes.js` opsiyoneldir.
+
+### Diğer Dosyalar
+- `supportController.js` ve `chatController.js` iş mantığını yönetir,  
+- `authMiddleware.js` yetkilendirme için kullanılır,  
+- `socketHandler.js` Socket.IO bağlantı ve event yönetimini sağlar.
+
+Bu yapı sayesinde müşteri ve otel sahibi ile destek ekibi arasında etkili ve esnek iletişim sağlanmaktadır.
+-------------------------------------------------------
 
