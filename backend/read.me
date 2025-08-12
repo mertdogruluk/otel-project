@@ -67,4 +67,17 @@ Proje kapsamında canlı destek ve sohbet sistemi için aşağıdaki modüller o
 
 Bu yapı sayesinde müşteri ve otel sahibi ile destek ekibi arasında etkili ve esnek iletişim sağlanmaktadır.
 -------------------------------------------------------
+## Ortam Değişkenleri (.env Dosyası)
+
+Proje, hassas bilgileri ve yapılandırma ayarlarını `.env` dosyası aracılığıyla yönetmektedir.  
+Bu dosyada aşağıdaki bilgiler yer alır:
+
+- **PORT:** Sunucunun çalışacağı port numarası.  
+- **DB_***: PostgreSQL veritabanı bağlantı bilgileri (host, port, kullanıcı, parola, veri tabanı adı).  
+- **JWT_SECRET:** JSON Web Token için gizli anahtar.  
+- **EMAIL_***: E-posta gönderimi için SMTP ayarları (opsiyonel).  
+- **CLOUDINARY_***: Bulut tabanlı görsel yükleme için Cloudinary API bilgileri (opsiyonel).
+
+`.env` dosyasını projenin kök dizinine ekleyip, değerleri kendinize göre düzenlemelisiniz.  
+Bu dosya `.gitignore` içinde yer almalı ve repoya gönderilmemelidir.
 
