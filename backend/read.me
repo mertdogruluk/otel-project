@@ -20,3 +20,28 @@ Controllerlar sadece HTTP istek ve yanıtlarını yönetirken, servisler asıl i
 
 Örnek olarak;  
 `hotelService.js` dosyasında otel oluşturma, listeleme ve güncelleme fonksiyonları bulunmaktadır.
+--------------------------------------------
+## Tests Katmanı
+
+`tests/` klasörü, projenin otomatik test dosyalarını içerir.  
+Bu testler sayesinde;
+
+- Kodun doğru çalıştığı,  
+- Fonksiyonların ve API endpointlerinin beklenen şekilde davrandığı,  
+- Yeni yapılan değişikliklerin mevcut sistemi bozmadığı  
+
+kontrol edilir.
+
+Testler, hata ve sorunların erken tespit edilmesini sağlar ve geliştirme sürecinin kalitesini artırır.  
+
+Projede Jest, Mocha veya benzeri test araçları kullanılarak;  
+- Unit testler (bireysel fonksiyonlar),  
+- Integration testler (modüllerin birlikte çalışması)  
+
+yazılmıştır.
+
+Örnek test dosyaları:  
+- `auth.test.js` (kullanıcı doğrulama testleri)  
+- `hotel.test.js` (otel işlemleri testleri)  
+- `reservation.test.js` (rezervasyon işlemleri testleri)
+
