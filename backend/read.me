@@ -1,3 +1,22 @@
-Kurulan Kütüphaneler Listesi
+Kurulan Kütüphaneler Listesi(Beyza)
 -Express
 -Socket.io
+
+12 Ağustos (Beyza)
+## Services Katmanı
+
+Projemizde `services/` klasörü, iş mantığını (business logic) controller’dan ayırmak amacıyla oluşturuldu.  
+Burada;
+
+- Veritabanı işlemleri,  
+- Karmaşık hesaplamalar,  
+- Yetkilendirme ve doğrulama işlemleri,  
+- Diğer iş süreçleri  
+
+yer almaktadır.
+
+Bu sayede kod daha modüler, okunabilir ve test edilebilir hale gelir.  
+Controllerlar sadece HTTP istek ve yanıtlarını yönetirken, servisler asıl iş mantığını yürütür.
+
+Örnek olarak;  
+`hotelService.js` dosyasında otel oluşturma, listeleme ve güncelleme fonksiyonları bulunmaktadır.
