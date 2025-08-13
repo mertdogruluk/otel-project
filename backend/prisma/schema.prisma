@@ -1,15 +1,95 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  CUSTOMER
+  HOTEL_OWNER
+  SUPPORT
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+}
+
+model User {
+  user_id      Int            @id @default(autoincrement())
+  name         String
+  email        String         @unique
+  password     String
+  role         UserRole       @default(CUSTOMER)
+  created_at   DateTime       @default(now())
+  hotels       Hotel[]        @relation("UserHotels")
+  reservations Reservation[]  @relation("UserReservations")
+  messages_sent Messages[]    @relation("UserMessages")
+}
+
+model Hotel {
+  hotel_id     Int      @id @default(autoincrement())
+  name         String
+  city         String
+  address      String
+  owner_id     Int
+  owner        User     @relation("UserHotels", fields: [owner_id], references: [user_id])
+  rooms        Room[]
+  reservations Reservation[] @relation("HotelReservations")
+  created_at   DateTime @default(now())
+  hotel_image  Image?
+}
+
+model Room {
+  room_id    Int      @id @default(autoincrement())
+  hotel_id   Int
+  hotel      Hotel    @relation(fields: [hotel_id], references: [hotel_id])
+  room_type  String
+  price      Float
+  created_at DateTime @default(now())
+  reservations Reservation[]
+}
+model Reservation {
+  reservation_id Int      @id @default(autoincrement())
+  user_id        Int
+  user           User     @relation("UserReservations", fields: [user_id], references: [user_id])
+  hotel_id       Int
+  hotel          Hotel    @relation("HotelReservations", fields: [hotel_id], references: [hotel_id])
+  room_id        Int
+  room           Room     @relation(fields: [room_id], references: [room_id])
+  start_date     DateTime
+  end_date       DateTime
+  status         ReservationStatus @default(PENDING)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+}
+
+model Image {
+  image_id   Int      @id @default(autoincrement())
+  hotel_id   Int      @unique
+  hotel      Hotel    @relation(fields: [hotel_id], references: [hotel_id])
+  created_at DateTime @default(now())
+}
+
+model SupportAgent {
+  agent_id   Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  created_at DateTime @default(now())
+  messages_received Messages[]
+}
+
+model Messages {
+  message_id  Int           @id @default(autoincrement())
+  sender_id   Int
+  sender      User          @relation("UserMessages", fields: [sender_id], references: [user_id])
+  reciever_id Int
+  reciever    SupportAgent  @relation(fields: [reciever_id], references: [agent_id])
+  content     String
+  created_at  DateTime @default(now())
 }
