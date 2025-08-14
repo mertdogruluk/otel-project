@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const { PrismaClient } = require('@prisma/client');
+import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -137,8 +137,4 @@ const authorizeOwnResource = (resourceUserId) => {
   };
 };
 
-module.exports = {
-  authenticateToken,
-  authorizeRoles,
-  authorizeOwnResource
-};
+export { authenticateToken, authorizeRoles, authorizeOwnResource };

@@ -62,7 +62,8 @@ router.get("/profile/:userId", authenticateToken, async (req, res) => {
 });
 
 // Kullanıcı profilini güncelleme (sadece kendi profilini)
-router.put("/profile/:userId", authenticateToken, authorizeOwnResource(req.params.userId), async (req, res) => {
+router.put("/profile/:userId", authenticateToken, (req, res, next) => authorizeOwnResource(req.params.userId)(req, res, next), async (req, res) => {
+  // route içeriği
   try {
     const { userId } = req.params;
     const { name, email } = req.body;
