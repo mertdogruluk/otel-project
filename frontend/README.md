@@ -164,18 +164,15 @@ frontend/
         └── user.ts
 ```
   
-
 ## 🎮 How to Use
 
-🎮 How to Use
-
-1️⃣ Register or Login – Create an account to book and manage reservations.
-2️⃣ Search Hotels – Use filters to find the best hotel for your needs.
-3️⃣ Book a Room – Select dates, confirm details, and pay securely.
-4️⃣ View Reservations – Check upcoming and past bookings in your dashboard.
-5️⃣ Manage Bookings – Cancel or update reservations easily.
-6️⃣ Hotel Owners – Manage hotels, rooms, and track bookings.
-7️⃣ Live Support Agents – Respond to customer messages in real-time.  
+- 1️⃣ Register or Login – Create an account to book and manage reservations.
+- 2️⃣ Search Hotels – Use filters to find the best hotel for your needs.
+- 3️⃣ Book a Room – Select dates, confirm details, and pay securely.
+- 4️⃣ View Reservations – Check upcoming and past bookings in your dashboard.
+- 5️⃣ Manage Bookings – Cancel or update reservations easily.
+- 6️⃣ Hotel Owners – Manage hotels, rooms, and track bookings.
+- 7️⃣ Live Support Agents – Respond to customer messages in real-time.  
 
 ---
 
