@@ -1,0 +1,144 @@
+const jwt = require('jsonwebtoken');
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
+
+/**
+ * JWT Token doğrulama middleware'i
+ * Bu middleware, gelen isteklerde Authorization header'dan JWT token'ını alır ve doğrular
+ */
+const authenticateToken = async (req, res, next) => {
+  try {
+    // Authorization header'dan token'ı al
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // "Bearer TOKEN" formatından token'ı çıkar
+
+    // Token yoksa hata döndür
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Erişim token\'ı bulunamadı. Lütfen giriş yapın.'
+      });
+    }
+
+    // JWT token'ını doğrula
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Token'dan kullanıcı ID'sini al
+    const userId = decoded.userId;
+    
+    // Kullanıcıyı veritabanından bul
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        isActive: true
+      }
+    });
+
+    // Kullanıcı bulunamadıysa hata döndür
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Geçersiz token. Kullanıcı bulunamadı.'
+      });
+    }
+
+    // Kullanıcı aktif değilse hata döndür
+    if (!user.isActive) {
+      return res.status(401).json({
+        success: false,
+        message: 'Hesabınız aktif değil. Lütfen yönetici ile iletişime geçin.'
+      });
+    }
+
+    // Kullanıcı bilgilerini request nesnesine ekle
+    req.user = user;
+    
+    // Sonraki middleware'e geç
+    next();
+
+  } catch (error) {
+    // JWT doğrulama hatası
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({
+        success: false,
+        message: 'Geçersiz token. Lütfen tekrar giriş yapın.'
+      });
+    }
+
+    // Token süresi dolmuş
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        success: false,
+        message: 'Token süresi dolmuş. Lütfen tekrar giriş yapın.'
+      });
+    }
+
+    // Diğer hatalar
+    console.error('Auth middleware hatası:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.'
+    });
+  }
+};
+
+/**
+ * Belirli roller için yetkilendirme middleware'i
+ * @param {string[]} allowedRoles - İzin verilen roller dizisi
+ */
+const authorizeRoles = (allowedRoles) => {
+  return (req, res, next) => {
+    // Önce authenticateToken middleware'ini çalıştır
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Yetkilendirme gerekli. Lütfen giriş yapın.'
+      });
+    }
+
+    // Kullanıcının rolü kontrol edilir
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Bu işlem için yetkiniz bulunmamaktadır.'
+      });
+    }
+
+    next();
+  };
+};
+
+/**
+ * Sadece kendi verilerine erişim kontrolü
+ * @param {string} resourceUserId - Erişilmek istenen kaynağın kullanıcı ID'si
+ */
+const authorizeOwnResource = (resourceUserId) => {
+  return (req, res, next) => {
+    // Admin kullanıcılar herkese erişebilir
+    if (req.user.role === 'ADMIN') {
+      return next();
+    }
+
+    // Normal kullanıcılar sadece kendi verilerine erişebilir
+    if (req.user.id !== resourceUserId) {
+      return res.status(403).json({
+        success: false,
+        message: 'Bu kaynağa erişim yetkiniz bulunmamaktadır.'
+      });
+    }
+
+    next();
+  };
+};
+
+module.exports = {
+  authenticateToken,
+  authorizeRoles,
+  authorizeOwnResource
+};
