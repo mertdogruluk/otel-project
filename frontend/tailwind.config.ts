@@ -7,6 +7,13 @@ export default <Config>{
     "./src/components/**/*.{ts,tsx,js,jsx}",
     "./src/**/*.{ts,tsx,js,jsx}",
   ],
-  theme: { extend: {} },
+  theme: {
+    extend: {
+      fontFamily: {
+        montserrat: ["var(--font-montserrat)", "sans-serif"],
+        opensans: ["var(--font-opensans)", "sans-serif"],
+      },
+    },
+  },
   plugins: [],
 };
