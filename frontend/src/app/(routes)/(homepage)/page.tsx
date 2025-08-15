@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 
 function HomePage() {
   return (
-<<<<<<< HEAD
     <>
     <div>HomePage</div>
     </>
