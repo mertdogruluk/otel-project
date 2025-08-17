@@ -1,57 +1,64 @@
 import express from "express";
 import prisma from "../config/db.js";
-import { authenticateToken, authorizeRoles, authorizeOwnResource } from "../middlewares/authMiddleware.js";
+import {
+  authenticateToken,
+  authorizeRoles,
+  authorizeOwnResource,
+} from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
 // Tüm kullanıcıları gösteren api (sadece admin kullanıcılar)
-router.get("/", authenticateToken, authorizeRoles(['ADMIN']), async (req, res) => {
-  try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        isActive: true,
-        createdAt: true
-      }
-    });
-    res.json({ success: true, data: users });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+router.get(
+  "/",
+  authenticateToken,
+  authorizeRoles(["ADMIN"]),
+  async (req, res) => {
+    try {
+      const users = await prisma.user.findMany({
+        select: {
+          user_id: true,
+          name: true,
+          email: true,
+          role: true,
+          created_at: true,
+        },
+      });
+      res.json({ success: true, data: users });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
   }
-});
+);
 
 // Kullanıcı profilini görüntüleme (kendi profilini veya admin herkesi görebilir)
 router.get("/profile/:userId", authenticateToken, async (req, res) => {
   try {
     const { userId } = req.params;
-    
+
     // Kendi profilini görüntüleme kontrolü
-    if (req.user.role !== 'ADMIN' && req.user.id !== userId) {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Bu profili görüntüleme yetkiniz bulunmamaktadır.' 
+    if (req.user.role !== "ADMIN" && req.user.user_id !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Bu profili görüntüleme yetkiniz bulunmamaktadır.",
       });
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { user_id: userId },
       select: {
-        id: true,
+        user_id: true,
         name: true,
         email: true,
         role: true,
-        isActive: true,
-        createdAt: true
-      }
+        created_at: true,
+      },
     });
 
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Kullanıcı bulunamadı.' 
+      return res.status(404).json({
+        success: false,
+        message: "Kullanıcı bulunamadı.",
       });
     }
 
@@ -62,30 +69,32 @@ router.get("/profile/:userId", authenticateToken, async (req, res) => {
 });
 
 // Kullanıcı profilini güncelleme (sadece kendi profilini)
-router.put("/profile/:userId", authenticateToken, (req, res, next) => authorizeOwnResource(req.params.userId)(req, res, next), async (req, res) => {
-  // route içeriği
-  try {
-    const { userId } = req.params;
-    const { name, email } = req.body;
+router.put(
+  "/profile/:userId",
+  authenticateToken,
+  (req, res, next) => authorizeOwnResource(req.params.userId)(req, res, next),
+  async (req, res) => {
+    // route içeriği
+    try {
+      const { userId } = req.params;
+      const { name, email } = req.body;
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: { name, email },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        isActive: true,
-        updatedAt: true
-      }
-    });
+      const updatedUser = await prisma.user.update({
+        where: { user_id: userId },
+        data: { name, email },
+        select: {
+          user_id: true,
+          name: true,
+          email: true,
+        },
+      });
 
-    res.json({ success: true, data: updatedUser });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+      res.json({ success: true, data: updatedUser });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
   }
-});
+);
 
 // kayıt olma role kısmı otel sahibi veya destek rolü vermek için
 router.post("/register", async (req, res) => {
