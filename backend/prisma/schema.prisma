@@ -28,10 +28,12 @@ model User {
   phone        String?
   role         UserRole       @default(CUSTOMER)
   created_at   DateTime       @default(now())
+
   hotels       Hotel[]        @relation("UserHotels")
   reservations Reservation[]  @relation("UserReservations")
-  messagesSent Messages[]     @relation("MessageSender")
-  messagesReceived Messages[] @relation("MessageReceiver")
+
+  messagesSent Message[]      @relation("MessageSender")
+  chats        ChatParticipant[]
 }
 
 model Hotel {
@@ -50,14 +52,15 @@ model Hotel {
 }
 
 model Room {
-  room_id    Int      @id @default(autoincrement())
-  hotel_id   Int
-  hotel      Hotel    @relation(fields: [hotel_id], references: [hotel_id])
-  room_type  String
-  price      Float
-  capacity   Int
+  room_id     Int      @id @default(autoincrement())
+  hotel_id    Int
+  hotel       Hotel    @relation(fields: [hotel_id], references: [hotel_id])
+  room_type   String
+  price       Float
+  capacity    Int
   description String?
-  created_at DateTime @default(now())
+  created_at  DateTime @default(now())
+
   reservations Reservation[]
 }
 
@@ -85,13 +88,34 @@ model Image {
   created_at DateTime @default(now())
 }
 
-model Messages {
+// Canlı Sohbet İçin Yeni Tablolar
+
+model Chat {
+  chat_id      Int              @id @default(autoincrement())
+  created_at   DateTime         @default(now())
+
+  participants ChatParticipant[]
+  messages     Message[]
+}
+
+model ChatParticipant {
+  participant_id Int   @id @default(autoincrement())
+  chat_id        Int
+  user_id        Int
+
+  chat Chat @relation(fields: [chat_id], references: [chat_id])
+  user User @relation(fields: [user_id], references: [user_id])
+
+  joined_at DateTime @default(now())
+}
+
+model Message {
   message_id  Int      @id @default(autoincrement())
+  chat_id     Int
   sender_id   Int
-  receiver_id Int
-  sender      User     @relation("MessageSender", fields: [sender_id], references: [user_id])
-  receiver    User     @relation("MessageReceiver", fields: [receiver_id], references: [user_id])
   content     String
   created_at  DateTime @default(now())
+
+  chat   Chat @relation(fields: [chat_id], references: [chat_id])
+  sender User @relation("MessageSender", fields: [sender_id], references: [user_id])
 }
-     
