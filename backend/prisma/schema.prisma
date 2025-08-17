@@ -25,11 +25,13 @@ model User {
   name         String
   email        String         @unique
   password     String
+  phone        String?
   role         UserRole       @default(CUSTOMER)
   created_at   DateTime       @default(now())
   hotels       Hotel[]        @relation("UserHotels")
   reservations Reservation[]  @relation("UserReservations")
-  messages_sent Messages[]    @relation("UserMessages")
+  messagesSent Messages[]     @relation("MessageSender")
+  messagesReceived Messages[] @relation("MessageReceiver")
 }
 
 model Hotel {
@@ -37,12 +39,14 @@ model Hotel {
   name         String
   city         String
   address      String
+  description  String?
+  rating       Float?
   owner_id     Int
   owner        User     @relation("UserHotels", fields: [owner_id], references: [user_id])
   rooms        Room[]
   reservations Reservation[] @relation("HotelReservations")
+  images       Image[]
   created_at   DateTime @default(now())
-  hotel_image  Image?
 }
 
 model Room {
@@ -51,9 +55,12 @@ model Room {
   hotel      Hotel    @relation(fields: [hotel_id], references: [hotel_id])
   room_type  String
   price      Float
+  capacity   Int
+  description String?
   created_at DateTime @default(now())
   reservations Reservation[]
 }
+
 model Reservation {
   reservation_id Int      @id @default(autoincrement())
   user_id        Int
@@ -64,6 +71,7 @@ model Reservation {
   room           Room     @relation(fields: [room_id], references: [room_id])
   start_date     DateTime
   end_date       DateTime
+  total_price    Float?
   status         ReservationStatus @default(PENDING)
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
@@ -71,25 +79,19 @@ model Reservation {
 
 model Image {
   image_id   Int      @id @default(autoincrement())
-  hotel_id   Int      @unique
+  hotel_id   Int
   hotel      Hotel    @relation(fields: [hotel_id], references: [hotel_id])
+  url        String
   created_at DateTime @default(now())
-}
-
-model SupportAgent {
-  agent_id   Int      @id @default(autoincrement())
-  name       String
-  email      String   @unique
-  created_at DateTime @default(now())
-  messages_received Messages[]
 }
 
 model Messages {
-  message_id  Int           @id @default(autoincrement())
+  message_id  Int      @id @default(autoincrement())
   sender_id   Int
-  sender      User          @relation("UserMessages", fields: [sender_id], references: [user_id])
-  reciever_id Int
-  reciever    SupportAgent  @relation(fields: [reciever_id], references: [agent_id])
+  receiver_id Int
+  sender      User     @relation("MessageSender", fields: [sender_id], references: [user_id])
+  receiver    User     @relation("MessageReceiver", fields: [receiver_id], references: [user_id])
   content     String
   created_at  DateTime @default(now())
 }
+     

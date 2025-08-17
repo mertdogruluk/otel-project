@@ -5,19 +5,10 @@ import dotenv from "dotenv";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 
-// DB bağlantısı
-import prisma from "./config/db.js";
-
-// REST API route’ları
-import userRoutes from "./routes/userRoutes.js";
-import hotelRoutes from "./routes/hotelRoutes.js";
-import reservationRoutes from "./routes/reservationRoutes.js";
-import testRoute from "./tests/user.test.js";
-
-// Canlı destek servisleri
-//import chatService from "./services/chatService.js";
-//import messageService from "./services/messageService.js";
-//import supportService from "./services/supportService.js";
+import { prisma } from "./src/config/db.js";
+import chatRoutes from "./src/routes/chatRoutes.js";
+import { findOrCreateDirectChat, isUserParticipantOfChat, getCounterpartIds } from "./src/services/chatService.js";
+import { saveMessage } from "./src/services/messageService.js";
 
 dotenv.config();
 
@@ -25,124 +16,119 @@ const app = express();
 const server = http.createServer(app);
 
 // --- Middleware
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || "*", credentials: true }));
+app.use(cors({ origin: process.env.CLIENT_ORIGIN?.split(",") || "*", credentials: true }));
 app.use(express.json());
 
+// --- REST
+app.use("/api/chats", chatRoutes);
+app.get("/", (_req, res) => res.send("API çalışıyor"));
 
-// --- REST API rotaları
-app.use("/api/users", userRoutes);
-app.use("/api/hotels", hotelRoutes);
-app.use("/api/reservations", reservationRoutes);
-
-// Test route
-app.use("/api", testRoute);
-
-app.get("/", (req, res) => res.send("API Çalışıyor"));
-
-// --- Socket.io kurulumu
+// --- Socket.io
 const io = new Server(server, {
-  cors: { origin: process.env.CLIENT_ORIGIN || "*", credentials: true },
+  cors: { origin: process.env.CLIENT_ORIGIN?.split(",") || "*", methods: ["GET", "POST"] },
 });
 
-// Io’yu diğer modüllerde kullanmak için
+// Io’yu REST tarafında da kullanmak istersen:
 app.set("io", io);
 
-// === JWT handshake doğrulama
-io.use((socket, next) => {
+// === Socket JWT doğrulama (handshake)
+io.use(async (socket, next) => {
   try {
-    const bearer = socket.handshake.auth?.token || socket.handshake.headers?.authorization;
+    const bearer = socket.handshake.auth?.token || socket.handshake.headers?.authorization || socket.handshake.query?.token;
     if (!bearer) return next(new Error("UNAUTHORIZED"));
 
-    const token = bearer.startsWith("Bearer ") ? bearer.slice(7) : bearer;
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const token = bearer.startsWith?.("Bearer ") ? bearer.slice(7) : bearer;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded?.userId || !decoded?.role) return next(new Error("UNAUTHORIZED"));
 
-    socket.user = { id: payload.userId, role: payload.role || "user", name: payload.name || "Guest" };
+    // Kullanıcı aktif mi kontrol
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: { id: true, role: true, firstName: true, lastName: true, isActive: true },
+    });
+    if (!user || !user.isActive) return next(new Error("UNAUTHORIZED"));
+
+    socket.user = { id: user.id, role: user.role, name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User" };
     next();
   } catch (err) {
     next(new Error("UNAUTHORIZED"));
   }
 });
 
-// === Canlı destek / chat state
-const onlineSupportSet = new Set();
-const socketRoomsByUser = new Map();
-
 // === Socket connection
 io.on("connection", (socket) => {
-  const { id: userId, role } = socket.user;
+  const { id: userId, role, name } = socket.user;
+  console.log(`🔌 Connected: ${name} (${role}) #${userId}`);
 
-  if (role === "support") {
-    socket.join("support:lobby");
-    onlineSupportSet.add(userId);
-    supportService.setStatus(userId, "online").catch(() => {});
-    io.to("support:lobby").emit("support:online-list", Array.from(onlineSupportSet));
-  } else {
-    socket.join(`user:${userId}`);
-  }
-
+  // Kişiye özel bildirim odası
   socket.join(`notify:${userId}`);
 
-  // --- Chat join
-  socket.on("chat:join", async (payload = {}, ack) => {
+  // --- Chat başlat/katıl (WhatsApp mantığı: 1↔2, 1↔3, 2↔3)
+  // payload: { targetUserId } → hedef kişi (rol önemli değil)
+  socket.on("chat:join", async ({ targetUserId }, ack) => {
     try {
-      let { chatId, toSupport } = payload;
-      if (!chatId) {
-        const chat = await chatService.findOrCreateDirectSupportChat(userId, { toSupport: !!toSupport });
-        chatId = chat.id;
-      }
+      if (!targetUserId) throw new Error("targetUserId gerekli");
+      if (String(targetUserId) === String(userId)) throw new Error("Kendinizle sohbet başlatamazsınız");
+
+      const chat = await findOrCreateDirectChat(Number(userId), Number(targetUserId));
+      const chatId = chat.id;
+
+      // Güvenlik: katılımcı mı?
+      const allowed = await isUserParticipantOfChat(userId, chatId);
+      if (!allowed) throw new Error("Sohbete erişim yetkiniz yok");
+
       socket.join(`chat:${chatId}`);
-      if (!socketRoomsByUser.has(userId)) socketRoomsByUser.set(userId, new Set());
-      socketRoomsByUser.get(userId).add(`chat:${chatId}`);
-      io.to("support:lobby").emit("chat:active", { chatId });
       ack?.({ ok: true, chatId });
     } catch (err) {
+      console.error("chat:join error", err);
       ack?.({ ok: false, error: err.message });
     }
   });
 
   // --- Mesaj gönder
-  socket.on("message:send", async (payload = {}, ack) => {
+  // payload: { chatId, content }
+  socket.on("message:send", async ({ chatId, content }, ack) => {
     try {
-      const { chatId, text, attachments } = payload;
-      if (!chatId || !text?.trim()) throw new Error("chatId ve text gereklidir");
-      const saved = await messageService.saveMessage({ chatId, senderId: userId, text: text.trim(), attachments: attachments || [] });
+      if (!chatId || !content?.trim()) throw new Error("chatId ve content gerekli");
+
+      // Güvenlik: katılımcı mı?
+      const allowed = await isUserParticipantOfChat(userId, Number(chatId));
+      if (!allowed) throw new Error("Bu sohbete mesaj gönderme yetkiniz yok");
+
+      const saved = await saveMessage({ chatId: Number(chatId), senderId: userId, text: content.trim() });
+
+      // Odaya yayınla
       io.to(`chat:${chatId}`).emit("message:new", saved);
 
-      const counterpartIds = await chatService.getCounterpartIds(chatId, userId);
-      counterpartIds.forEach(cid => io.to(`notify:${cid}`).emit("notify:new-message", { chatId, messageId: saved.id }));
+      // Karşı tarafa bildirim gönder
+      const others = await getCounterpartIds(Number(chatId), userId);
+      others.forEach((otherId) => {
+        io.to(`notify:${otherId}`).emit("notify:new-message", {
+          chatId: Number(chatId),
+          messageId: saved.id,
+          from: userId,
+        });
+      });
 
       ack?.({ ok: true, message: saved });
     } catch (err) {
+      console.error("message:send error", err);
       ack?.({ ok: false, error: err.message });
     }
   });
 
-  // --- Typing
+  // --- Yazıyor (typing) bildirimi
   socket.on("typing", ({ chatId, typing }) => {
     if (!chatId) return;
     socket.to(`chat:${chatId}`).emit("typing", { userId, typing: !!typing });
   });
 
-  // --- Chat leave
-  socket.on("chat:leave", ({ chatId }) => {
-    if (!chatId) return;
-    socket.leave(`chat:${chatId}`);
-    socketRoomsByUser.get(userId)?.delete(`chat:${chatId}`);
-  });
-
-  // --- Disconnect
-  socket.on("disconnect", async () => {
-    if (role === "support") {
-      onlineSupportSet.delete(userId);
-      await supportService.setStatus(userId, "offline").catch(() => {});
-      io.to("support:lobby").emit("support:online-list", Array.from(onlineSupportSet));
-    }
-        console.log("Kullanıcı ayrıldı:", socket.id);
+  // --- Ayrılma
+  socket.on("disconnect", () => {
+    console.log(`❌ Disconnected: ${name} (${role}) #${userId}`);
   });
 });
 
 // --- Server başlat
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Server ${PORT} portunda çalışıyor`));
-
-export default app;
+server.listen(PORT, () => console.log(`🚀 Server http://localhost:${PORT} üzerinde`));
