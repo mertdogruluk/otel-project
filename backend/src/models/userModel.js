@@ -1,39 +1,35 @@
-const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 class UserModel {
   /**
    * Yeni kullanıcı oluştur
-   * @param {Object} userData - Kullanıcı bilgileri
-   * @returns {Promise<Object>} Oluşturulan kullanıcı
    */
   async createUser(userData) {
     try {
-      const { email, password, firstName, lastName, role = 'USER', phone } = userData;
-      
+      const { email, password, name, role = 'CUSTOMER' } = userData;
+
       // Email kontrolü
       const existingUser = await this.findUserByEmail(email);
       if (existingUser) {
         throw new Error('Bu email zaten kullanılıyor');
       }
-      
+
       // Şifreyi hash'le
       const hashedPassword = await bcrypt.hash(password, 12);
-      
+
       // Kullanıcıyı oluştur
       const user = await prisma.user.create({
         data: {
           email,
           password: hashedPassword,
-          firstName,
-          lastName,
-          role,
-          phone
+          name,
+          role
         }
       });
-      
+
       return user;
     } catch (error) {
       throw error;
@@ -42,14 +38,10 @@ class UserModel {
 
   /**
    * Email ile kullanıcı bul
-   * @param {string} email - Kullanıcı email'i
-   * @returns {Promise<Object|null>} Bulunan kullanıcı veya null
    */
   async findUserByEmail(email) {
     try {
-      return await prisma.user.findUnique({
-        where: { email }
-      });
+      return await prisma.user.findUnique({ where: { email } });
     } catch (error) {
       throw error;
     }
@@ -57,14 +49,10 @@ class UserModel {
 
   /**
    * ID ile kullanıcı bul
-   * @param {string} id - Kullanıcı ID'si
-   * @returns {Promise<Object|null>} Bulunan kullanıcı veya null
    */
-  async findUserById(id) {
+  async findUserById(user_id) {
     try {
-      return await prisma.user.findUnique({
-        where: { id }
-      });
+      return await prisma.user.findUnique({ where: { user_id } });
     } catch (error) {
       throw error;
     }
@@ -72,19 +60,15 @@ class UserModel {
 
   /**
    * Kullanıcı bilgilerini güncelle
-   * @param {string} id - Kullanıcı ID'si
-   * @param {Object} updateData - Güncellenecek veriler
-   * @returns {Promise<Object>} Güncellenmiş kullanıcı
    */
-  async updateUser(id, updateData) {
+  async updateUser(user_id, updateData) {
     try {
-      // Eğer şifre güncelleniyorsa hash'le
       if (updateData.password) {
         updateData.password = await bcrypt.hash(updateData.password, 12);
       }
-      
+
       return await prisma.user.update({
-        where: { id },
+        where: { user_id },
         data: updateData
       });
     } catch (error) {
@@ -94,35 +78,27 @@ class UserModel {
 
   /**
    * Kullanıcıyı sil
-   * @param {string} id - Kullanıcı ID'si
-   * @returns {Promise<Object>} Silinen kullanıcı
    */
-  async deleteUser(id) {
+  async deleteUser(user_id) {
     try {
-      return await prisma.user.delete({
-        where: { id }
-      });
+      return await prisma.user.delete({ where: { user_id } });
     } catch (error) {
       throw error;
     }
   }
 
   /**
-   * Tüm kullanıcıları listele (şifre hariç)
-   * @returns {Promise<Array>} Kullanıcı listesi
+   * Tüm kullanıcıları listele
    */
   async getAllUsers() {
     try {
       return await prisma.user.findMany({
         select: {
-          id: true,
+          user_id: true,
+          name: true,
           email: true,
-          firstName: true,
-          lastName: true,
           role: true,
-          phone: true,
-          createdAt: true,
-          updatedAt: true
+          created_at: true
         }
       });
     } catch (error) {
@@ -132,21 +108,17 @@ class UserModel {
 
   /**
    * Rol bazında kullanıcıları listele
-   * @param {string} role - Kullanıcı rolü
-   * @returns {Promise<Array>} Kullanıcı listesi
    */
   async getUsersByRole(role) {
     try {
       return await prisma.user.findMany({
         where: { role },
         select: {
-          id: true,
+          user_id: true,
+          name: true,
           email: true,
-          firstName: true,
-          lastName: true,
           role: true,
-          phone: true,
-          createdAt: true
+          created_at: true
         }
       });
     } catch (error) {
@@ -156,9 +128,6 @@ class UserModel {
 
   /**
    * Şifre doğrulama
-   * @param {string} password - Girilen şifre
-   * @param {string} hashedPassword - Hash'lenmiş şifre
-   * @returns {Promise<boolean>} Şifre doğru mu?
    */
   async verifyPassword(password, hashedPassword) {
     try {
@@ -170,7 +139,6 @@ class UserModel {
 
   /**
    * Kullanıcı sayısını getir
-   * @returns {Promise<number>} Toplam kullanıcı sayısı
    */
   async getUserCount() {
     try {
@@ -181,28 +149,23 @@ class UserModel {
   }
 
   /**
-   * Kullanıcı arama (ad, soyad veya email ile)
-   * @param {string} searchTerm - Arama terimi
-   * @returns {Promise<Array>} Bulunan kullanıcılar
+   * Kullanıcı arama (name veya email ile)
    */
   async searchUsers(searchTerm) {
     try {
       return await prisma.user.findMany({
         where: {
           OR: [
-            { firstName: { contains: searchTerm, mode: 'insensitive' } },
-            { lastName: { contains: searchTerm, mode: 'insensitive' } },
+            { name: { contains: searchTerm, mode: 'insensitive' } },
             { email: { contains: searchTerm, mode: 'insensitive' } }
           ]
         },
         select: {
-          id: true,
+          user_id: true,
+          name: true,
           email: true,
-          firstName: true,
-          lastName: true,
           role: true,
-          phone: true,
-          createdAt: true
+          created_at: true
         }
       });
     } catch (error) {
@@ -211,4 +174,4 @@ class UserModel {
   }
 }
 
-module.exports = new UserModel();
+export default new UserModel();

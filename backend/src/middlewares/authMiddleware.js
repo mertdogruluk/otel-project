@@ -29,14 +29,13 @@ const authenticateToken = async (req, res, next) => {
     
     // Kullanıcıyı veritabanından bul
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: {user_id: userId },
       select: {
-        id: true,
+        user_id: true,
         email: true,
-        firstName: true,
-        lastName: true,
+        name: true,          
         role: true,
-        isActive: true
+        created_at: true
       }
     });
 
@@ -48,13 +47,6 @@ const authenticateToken = async (req, res, next) => {
       });
     }
 
-    // Kullanıcı aktif değilse hata döndür
-    if (!user.isActive) {
-      return res.status(401).json({
-        success: false,
-        message: 'Hesabınız aktif değil. Lütfen yönetici ile iletişime geçin.'
-      });
-    }
 
     // Kullanıcı bilgilerini request nesnesine ekle
     req.user = user;
@@ -126,7 +118,7 @@ const authorizeOwnResource = (resourceUserId) => {
     }
 
     // Normal kullanıcılar sadece kendi verilerine erişebilir
-    if (req.user.id !== resourceUserId) {
+    if (req.user.user_id !== resourceUserId) {
       return res.status(403).json({
         success: false,
         message: 'Bu kaynağa erişim yetkiniz bulunmamaktadır.'
