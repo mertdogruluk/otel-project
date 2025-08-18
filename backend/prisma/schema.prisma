@@ -88,8 +88,6 @@ model Image {
   created_at DateTime @default(now())
 }
 
-// Canlı Sohbet İçin Yeni Tablolar
-
 model Chat {
   chat_id      Int              @id @default(autoincrement())
   created_at   DateTime         @default(now())
@@ -117,5 +115,5 @@ model Message {
   created_at  DateTime @default(now())
 
   chat   Chat @relation(fields: [chat_id], references: [chat_id])
-  sender User @relation("MessageSender", fields: [sender_id], references: [user_id])
+  sender User @relation("MessageSender", fields: [sender_id], references: [user_id])
 }
