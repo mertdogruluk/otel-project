@@ -1,0 +1,122 @@
+Kurulan Kütüphaneler Listesi(Beyza)
+-Express
+-Socket.io
+
+12 Ağustos (Beyza)
+## Services Katmanı
+
+Projemizde `services/` klasörü, iş mantığını (business logic) controller’dan ayırmak amacıyla oluşturuldu.  
+Burada;
+
+- Veritabanı işlemleri,  
+- Karmaşık hesaplamalar,  
+- Yetkilendirme ve doğrulama işlemleri,  
+- Diğer iş süreçleri  
+
+yer almaktadır.
+
+Bu sayede kod daha modüler, okunabilir ve test edilebilir hale gelir.  
+Controllerlar sadece HTTP istek ve yanıtlarını yönetirken, servisler asıl iş mantığını yürütür.
+
+Örnek olarak;  
+`hotelService.js` dosyasında otel oluşturma, listeleme ve güncelleme fonksiyonları bulunmaktadır.
+--------------------------------------------
+## Tests Katmanı
+
+`tests/` klasörü, projenin otomatik test dosyalarını içerir.  
+Bu testler sayesinde;
+
+- Kodun doğru çalıştığı,  
+- Fonksiyonların ve API endpointlerinin beklenen şekilde davrandığı,  
+- Yeni yapılan değişikliklerin mevcut sistemi bozmadığı  
+
+kontrol edilir.
+
+Testler, hata ve sorunların erken tespit edilmesini sağlar ve geliştirme sürecinin kalitesini artırır.  
+
+Projede Jest, Mocha veya benzeri test araçları kullanılarak;  
+- Unit testler (bireysel fonksiyonlar),  
+- Integration testler (modüllerin birlikte çalışması)  
+
+yazılmıştır.
+
+Örnek test dosyaları:  
+- `auth.test.js` (kullanıcı doğrulama testleri)  
+- `hotel.test.js` (otel işlemleri testleri)  
+- `reservation.test.js` (rezervasyon işlemleri testleri)
+------------------------------------------------------
+## Support ve Chat Modülleri
+
+Proje kapsamında canlı destek ve sohbet sistemi için aşağıdaki modüller oluşturulmuştur:
+
+### Support Modülü
+- Müşteri destek taleplerinin yönetimi,  
+- Destek taleplerinin oluşturulması, listelenmesi ve güncellenmesi,  
+- REST API endpointleri `supportRoutes.js` dosyasında tanımlanmıştır.
+
+### Chat Modülü
+- Gerçek zamanlı canlı sohbet ve mesajlaşma işlemleri,  
+- Socket.IO üzerinden anlık iletişim sağlanır,  
+- Mesajların modellenmesi `chatModel.js` ile yapılır,  
+- REST API üzerinden bazı chat işlemleri varsa `chatRoutes.js` opsiyoneldir.
+
+### Diğer Dosyalar
+- `supportController.js` ve `chatController.js` iş mantığını yönetir,  
+- `authMiddleware.js` yetkilendirme için kullanılır,  
+- `socketHandler.js` Socket.IO bağlantı ve event yönetimini sağlar.
+
+Bu yapı sayesinde müşteri ve otel sahibi ile destek ekibi arasında etkili ve esnek iletişim sağlanmaktadır.
+-------------------------------------------------------
+## Ortam Değişkenleri (.env Dosyası)
+
+Proje, hassas bilgileri ve yapılandırma ayarlarını `.env` dosyası aracılığıyla yönetmektedir.  
+Bu dosyada aşağıdaki bilgiler yer alır:
+
+- **PORT:** Sunucunun çalışacağı port numarası.  
+- **DB_***: PostgreSQL veritabanı bağlantı bilgileri (host, port, kullanıcı, parola, veri tabanı adı).  
+- **JWT_SECRET:** JSON Web Token için gizli anahtar.  
+- **EMAIL_***: E-posta gönderimi için SMTP ayarları (opsiyonel).  
+- **CLOUDINARY_***: Bulut tabanlı görsel yükleme için Cloudinary API bilgileri (opsiyonel).
+
+`.env` dosyasını projenin kök dizinine ekleyip, değerleri kendinize göre düzenlemelisiniz.  
+Bu dosya `.gitignore` içinde yer almalı ve repoya gönderilmemelidir.
+--------------------------------------------------------
+14 Ağustos (Beyza) (server.js güncellendi)
+Socket.io ile gerçek zamanlı chat ve canlı destek sistemi kurulmuş, JWT ile kullanıcı doğrulaması yapılıyor.
+
+Mesaj gönderme, chat join/leave, typing ve destek online/offline durumları yönetiliyor.
+
+Sunucu PORT 5000 üzerinde çalışıyor ve hem API hem de socket bağlantıları aynı server üzerinden sağlanıyor.
+-----------------------------
+15 Ağustos sunum yapıldı.
+---------------------------
+16 Ağustos (Beyza)
+ -->  chatServices.js kodlamaları güncellenecekk!!!!!!
+findOrCreateGeneralChat() → Genel destek odasını açar.
+
+findOrCreatePrivateChat(customerId, hotelId) → Müşteri & otel sahibi için özel oda açar.
+
+getUserChats(userId, role) → Kullanıcının tüm sohbet odalarını listeler (müşteri, otel sahibi, destekçi farklı sonuç alır).
+
+getCounterpartIds(chatId, currentUserId) → Mesaj gönderildiğinde bildirim atılacak diğer kullanıcıların ID’lerini bulur.
+------------------------------------------
+Eklenen /silinen tablolar 17 Ağustos 
+mevcut db deki support tablosu silindi,messages tablosu silindi 
+güncel Chat, ChatParticipant, Message modelleri eklendi 
+-----------------------------------------
+18 Ağustos (Beyza)
+Bugün yapılanlar:
+
+- Prisma güncellemesi yapıldı; eski client kaldırıldı, yeni Prisma Client generate edildi.
+- Message ve Chat servisleri şemaya uygun hâle getirildi:
+    - receiver ve receiver_id alanları Message modelinde olmadığı için koddan kaldırıldı.
+    - saveMessage ve getMessagesByChatId fonksiyonları buna göre güncellendi.
+- Chat testleri ve Message testleri yeniden düzenlendi; tüm testler başarıyla geçti.
+- Testlerde kullanılan kullanıcı ve chat temizleme işlemleri Prisma ile uyumlu hâle getirildi.
+- Jest modülü eklendi ve test altyapısı hazırlandı.
+- package.json test script kısmı güncellendi; backend chat ve mesaj modülleri artık test edilebilir durumda.
+- server.js güncellendi; chat ve mesaj servisleri ile uyumlu hâle getirildi.
+-----------------------------------
+19 Ağustos (Beyza)
+Canlı destek için gerekli olan Controllers,models,routes,services yapıları kodlandı.
+test klasöründe testler başarıyla sonuçlandı.

@@ -2,7 +2,7 @@ import React from 'react'
 
 function HomePage() {
   return (
-  <div
+    <div
       className="pt-9 bg-[url('/images/map-img.png')] bg-cover bg-center bg-no-repeat h-[500px] flex flex-col justify-center items-center"
     >
       <h1 className="font-opensans font-bold text-[44px] text-center text-white drop-shadow-lg">

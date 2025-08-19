@@ -1,0 +1,119 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  CUSTOMER
+  HOTEL_OWNER
+  SUPPORT
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+}
+
+model User {
+  user_id      Int            @id @default(autoincrement())
+  name         String
+  email        String         @unique
+  password     String
+  phone        String?
+  role         UserRole       @default(CUSTOMER)
+  created_at   DateTime       @default(now())
+
+  hotels       Hotel[]        @relation("UserHotels")
+  reservations Reservation[]  @relation("UserReservations")
+
+  messagesSent Message[]      @relation("MessageSender")
+  chats        ChatParticipant[]
+}
+
+model Hotel {
+  hotel_id     Int      @id @default(autoincrement())
+  name         String
+  city         String
+  address      String
+  description  String?
+  rating       Float?
+  owner_id     Int
+  owner        User     @relation("UserHotels", fields: [owner_id], references: [user_id])
+  rooms        Room[]
+  reservations Reservation[] @relation("HotelReservations")
+  images       Image[]
+  created_at   DateTime @default(now())
+}
+
+model Room {
+  room_id     Int      @id @default(autoincrement())
+  hotel_id    Int
+  hotel       Hotel    @relation(fields: [hotel_id], references: [hotel_id])
+  room_type   String
+  price       Float
+  capacity    Int
+  description String?
+  created_at  DateTime @default(now())
+
+  reservations Reservation[]
+}
+
+model Reservation {
+  reservation_id Int      @id @default(autoincrement())
+  user_id        Int
+  user           User     @relation("UserReservations", fields: [user_id], references: [user_id])
+  hotel_id       Int
+  hotel          Hotel    @relation("HotelReservations", fields: [hotel_id], references: [hotel_id])
+  room_id        Int
+  room           Room     @relation(fields: [room_id], references: [room_id])
+  start_date     DateTime
+  end_date       DateTime
+  total_price    Float?
+  status         ReservationStatus @default(PENDING)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+}
+
+model Image {
+  image_id   Int      @id @default(autoincrement())
+  hotel_id   Int
+  hotel      Hotel    @relation(fields: [hotel_id], references: [hotel_id])
+  url        String
+  created_at DateTime @default(now())
+}
+
+model Chat {
+  chat_id      Int              @id @default(autoincrement())
+  created_at   DateTime         @default(now())
+
+  participants ChatParticipant[]
+  messages     Message[]
+}
+
+model ChatParticipant {
+  participant_id Int   @id @default(autoincrement())
+  chat_id        Int
+  user_id        Int
+
+  chat Chat @relation(fields: [chat_id], references: [chat_id])
+  user User @relation(fields: [user_id], references: [user_id])
+
+  joined_at DateTime @default(now())
+}
+
+model Message {
+  message_id  Int      @id @default(autoincrement())
+  chat_id     Int
+  sender_id   Int
+  content     String
+  created_at  DateTime @default(now())
+
+  chat   Chat @relation(fields: [chat_id], references: [chat_id])
+  sender User @relation("MessageSender", fields: [sender_id], references: [user_id])
+}
