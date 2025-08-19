@@ -103,3 +103,20 @@ getCounterpartIds(chatId, currentUserId) → Mesaj gönderildiğinde bildirim at
 Eklenen /silinen tablolar 17 Ağustos 
 mevcut db deki support tablosu silindi,messages tablosu silindi 
 güncel Chat, ChatParticipant, Message modelleri eklendi 
+-----------------------------------------
+18 Ağustos (Beyza)
+Bugün yapılanlar:
+
+- Prisma güncellemesi yapıldı; eski client kaldırıldı, yeni Prisma Client generate edildi.
+- Message ve Chat servisleri şemaya uygun hâle getirildi:
+    - receiver ve receiver_id alanları Message modelinde olmadığı için koddan kaldırıldı.
+    - saveMessage ve getMessagesByChatId fonksiyonları buna göre güncellendi.
+- Chat testleri ve Message testleri yeniden düzenlendi; tüm testler başarıyla geçti.
+- Testlerde kullanılan kullanıcı ve chat temizleme işlemleri Prisma ile uyumlu hâle getirildi.
+- Jest modülü eklendi ve test altyapısı hazırlandı.
+- package.json test script kısmı güncellendi; backend chat ve mesaj modülleri artık test edilebilir durumda.
+- server.js güncellendi; chat ve mesaj servisleri ile uyumlu hâle getirildi.
+-----------------------------------
+19 Ağustos (Beyza)
+Canlı destek için gerekli olan Controllers,models,routes,services yapıları kodlandı.
+test klasöründe testler başarıyla sonuçlandı.

@@ -5,10 +5,10 @@ import dotenv from "dotenv";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 
-import { prisma } from "./src/config/db.js";
-import chatRoutes from "./src/routes/chatRoutes.js";
-import { findOrCreateDirectChat, isUserParticipantOfChat, getCounterpartIds } from "./src/services/chatService.js";
-import { saveMessage } from "./src/services/messageService.js";
+import  prisma  from "./config/db.js";
+import chatRoutes from "./routes/chatRoutes.js";
+import { findOrCreateDirectChat, isUserParticipantOfChat, getCounterpartIds } from "./services/chatService.js";
+import { saveMessage } from "./services/messageService.js";
 
 dotenv.config();
 
@@ -41,14 +41,14 @@ io.use(async (socket, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded?.userId || !decoded?.role) return next(new Error("UNAUTHORIZED"));
 
-    // Kullanıcı aktif mi kontrol
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      select: { id: true, role: true, firstName: true, lastName: true, isActive: true },
+    // Kullanıcıyı şemaya uygun çek
+    const user = await prisma.User.findUnique({
+      where: { user_id: decoded.userId },
+      select: { user_id: true, role: true, name: true },
     });
-    if (!user || !user.isActive) return next(new Error("UNAUTHORIZED"));
+    if (!user) return next(new Error("UNAUTHORIZED"));
 
-    socket.user = { id: user.id, role: user.role, name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User" };
+    socket.user = { user_id: user.user_id, role: user.role, name: user.name || "User" };
     next();
   } catch (err) {
     next(new Error("UNAUTHORIZED"));
@@ -57,23 +57,20 @@ io.use(async (socket, next) => {
 
 // === Socket connection
 io.on("connection", (socket) => {
-  const { id: userId, role, name } = socket.user;
+  const { user_id: userId, role, name } = socket.user;
   console.log(`🔌 Connected: ${name} (${role}) #${userId}`);
 
-  // Kişiye özel bildirim odası
   socket.join(`notify:${userId}`);
 
-  // --- Chat başlat/katıl (WhatsApp mantığı: 1↔2, 1↔3, 2↔3)
-  // payload: { targetUserId } → hedef kişi (rol önemli değil)
+  // --- Chat join
   socket.on("chat:join", async ({ targetUserId }, ack) => {
     try {
       if (!targetUserId) throw new Error("targetUserId gerekli");
       if (String(targetUserId) === String(userId)) throw new Error("Kendinizle sohbet başlatamazsınız");
 
       const chat = await findOrCreateDirectChat(Number(userId), Number(targetUserId));
-      const chatId = chat.id;
+      const chatId = chat.chat_id;
 
-      // Güvenlik: katılımcı mı?
       const allowed = await isUserParticipantOfChat(userId, chatId);
       if (!allowed) throw new Error("Sohbete erişim yetkiniz yok");
 
@@ -86,26 +83,22 @@ io.on("connection", (socket) => {
   });
 
   // --- Mesaj gönder
-  // payload: { chatId, content }
   socket.on("message:send", async ({ chatId, content }, ack) => {
     try {
       if (!chatId || !content?.trim()) throw new Error("chatId ve content gerekli");
 
-      // Güvenlik: katılımcı mı?
       const allowed = await isUserParticipantOfChat(userId, Number(chatId));
       if (!allowed) throw new Error("Bu sohbete mesaj gönderme yetkiniz yok");
 
       const saved = await saveMessage({ chatId: Number(chatId), senderId: userId, text: content.trim() });
 
-      // Odaya yayınla
       io.to(`chat:${chatId}`).emit("message:new", saved);
 
-      // Karşı tarafa bildirim gönder
       const others = await getCounterpartIds(Number(chatId), userId);
       others.forEach((otherId) => {
         io.to(`notify:${otherId}`).emit("notify:new-message", {
           chatId: Number(chatId),
-          messageId: saved.id,
+          messageId: saved.message_id,
           from: userId,
         });
       });
@@ -117,13 +110,13 @@ io.on("connection", (socket) => {
     }
   });
 
-  // --- Yazıyor (typing) bildirimi
+  // --- Typing
   socket.on("typing", ({ chatId, typing }) => {
     if (!chatId) return;
     socket.to(`chat:${chatId}`).emit("typing", { userId, typing: !!typing });
   });
 
-  // --- Ayrılma
+  // --- Disconnect
   socket.on("disconnect", () => {
     console.log(`❌ Disconnected: ${name} (${role}) #${userId}`);
   });
@@ -131,4 +124,5 @@ io.on("connection", (socket) => {
 
 // --- Server başlat
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 Server http://localhost:${PORT} üzerinde`));
+server.listen(PORT, () => console.log(` Server http://localhost:${PORT} üzerinde`));
+export default app; // REST API için kullanılabilir
