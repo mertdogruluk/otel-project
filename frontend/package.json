@@ -9,10 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
-=======
     "@radix-ui/react-avatar": "^1.1.10",
->>>>>>> a940f84aea6128b98a3094713097b858f32ad204
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-slot": "^1.2.3",
     "class-variance-authority": "^0.7.1",
@@ -28,11 +25,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
-<<<<<<< HEAD
-    "@types/node": "20.19.10",
-=======
     "@types/node": "20.19.11",
->>>>>>> a940f84aea6128b98a3094713097b858f32ad204
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
