@@ -47,7 +47,7 @@ const DashboardPage: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            Welcome back! Here's what's happening with your business.
+            Welcome back! Here&apos;s what&apos;s happening with your business.
           </p>
         </div>
         <div className="flex items-center space-x-2">
