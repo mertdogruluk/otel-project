@@ -1,9 +1,345 @@
-import React from 'react'
+"use client";
 
-function ProductDetailPage() {
+import Image from "next/image";
+import { Heart, Share2 } from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import RezervasyonKarti from "@/components/booking/BookingSummary";
+import OzelliklerGrid from "@/components/hotel-card/FeaturesGrid";
+import OtelKarti from "@/components/hotel-card/HotelCard";
+import { otelVerisi } from "@/types/hotel";
+
+const otelGorselleri = [
+  {
+    id: 1,
+    src: "/images/hotel-page-1.jpg",
+    alt: "Lüks otel havuzu ve mimari"
+  },
+  {
+    id: 2,
+    src: "/images/hotel-page-2.jpg",
+    alt: "Otel iç avlu ve havuz"
+  },
+  {
+    id: 3,
+    src: "/images/hotel-page-3.jpg",
+    alt: "Otel duvar dekorasyonu"
+  },
+  {
+    id: 4,
+    src: "/images/hotel-page-4.jpg",
+    alt: "Otel havuz detayı"
+  },
+  {
+    id: 5,
+    src: "/images/hotel-page-5.jpg",
+    alt: "Otel genel görünüm"
+  }
+];
+
+export default function OtelSayfasi() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % otelGorselleri.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => 
+      prev === 0 ? otelGorselleri.length - 1 : prev - 1
+    );
+  };
+
+  const toggleFavorite = () => {
+    setIsFavorite(!isFavorite);
+  };
+
+  const handleShare = () => {
+    // Paylaşım işlevi burada implement edilecek
+    console.log("Paylaş butonuna tıklandı");
+  };
+
   return (
-    <div>ProductDetailPage</div>
-  )
-}
+    <div className="min-h-screen bg-white">
+      <main className="py-6 sm:py-8">
+        <div className="container mx-auto px-2 sm:px-4 md:px-8 xl:px-[90px]">
+          {/* Breadcrumbs ve Butonlar */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/">Ana Sayfa</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/otel">Oteller</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{otelVerisi.isim}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
 
-export default ProductDetailPage;
+            {/* Favori ve Paylaş Butonları */}
+            <div className="flex items-center space-x-6">
+              {/* Favori Butonu */}
+              <button
+                onClick={toggleFavorite}
+                className="w-10 h-10 rounded-lg border border-gray-300 hover:border-red-300 hover:bg-red-50 flex items-center justify-center transition-all duration-200"
+              >
+                <Heart className={`w-5 h-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-500'}`} fill={isFavorite ? 'currentColor' : 'none'} />
+              </button>
+
+              {/* Paylaş Butonu */}
+              <button
+                onClick={handleShare}
+                className="w-10 h-10 rounded-lg border border-gray-300 hover:border-blue-300 hover:bg-blue-50 flex items-center justify-center transition-all duration-200"
+              >
+                <Share2 className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+            {/* Sol Taraf - Görsel Grid Yapısı */}
+            <div className="w-full lg:flex-1 mb-8 lg:mb-0">
+              <div className="max-w-[1000px]">
+                {/* Büyük Ana Görsel */}
+                <div className="mb-8 relative">
+                  <div className="relative w-full h-[600px] rounded-3xl overflow-hidden shadow-2xl">
+                    <Image
+                      src={otelGorselleri[currentImageIndex].src}
+                      alt={otelGorselleri[currentImageIndex].alt}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
+                  
+                  {/* Sol Ok Butonu */}
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-10"
+                  >
+                    <svg 
+                      className="w-6 h-6 text-gray-700" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M15 19l-7-7 7-7" 
+                      />
+                    </svg>
+                  </button>
+
+                  {/* Sağ Ok Butonu */}
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-10"
+                  >
+                    <svg 
+                      className="w-6 h-6 text-gray-700" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M9 5l7 7-7 7" 
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Küçük Görseller Grid */}
+                <div className="grid grid-cols-4 gap-4 w-full max-w-[800px] mb-8">
+                  {otelGorselleri.slice(1, 5).map((gorsel, index) => (
+                    <div key={gorsel.id} className="relative w-full h-[150px] rounded-2xl overflow-hidden shadow-lg">
+                      <Image
+                        src={gorsel.src}
+                        alt={gorsel.alt}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Tab Yapısı */}
+                <Tabs defaultValue="aciklama" className="w-full">
+                  <div className="border-b border-gray-200 mb-6">
+                    <TabsList className="grid w-full grid-cols-3 bg-transparent border-0 p-0 h-auto">
+                      <TabsTrigger 
+                        value="aciklama" 
+                        className="data-[state=active]:bg-transparent data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none bg-transparent border-0 rounded-none py-3 text-gray-600 hover:text-gray-800 transition-colors"
+                      >
+                        Açıklama
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="degerlendirme" 
+                        className="data-[state=active]:bg-transparent data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none bg-transparent border-0 rounded-none py-3 text-gray-600 hover:text-gray-800 transition-colors"
+                      >
+                        Değerlendirme
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="harita" 
+                        className="data-[state=active]:bg-transparent data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none bg-transparent border-0 rounded-none py-3 text-gray-600 hover:text-gray-800 transition-colors"
+                      >
+                        Harita
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
+                  
+                  <TabsContent value="aciklama" className="space-y-6">
+                    <div className="prose max-w-none">
+                      <p className="text-gray-700 leading-relaxed mb-4">
+                        Riad Deluxe, geleneksel Fas mimarisini modern konforla birleştiren lüks bir konaklama seçeneğidir. 
+                        Fas kültürünü ve geleneklerini keşfetmek isteyen gezginler için ideal olan bu otel, 
+                        Medina&apos;nın tarihi sokaklarından dakikalar uzaklıkta yer almaktadır.
+                      </p>
+                      
+                      <p className="text-gray-700 leading-relaxed mb-6">
+                        Zarif iç mekanlar, geleneksel Fas dokuma halıları, el yapımı seramikler ve renkli cam işçiliği 
+                        ile dekore edilmiş odalar, sıcak bir atmosfer yaratır. Otantik riad mimarisi ile 
+                        huzurlu bir kaçamak için mükemmel bir seçimdir.
+                      </p>
+
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3">Odalar ve Süitler:</h3>
+                      <p className="text-gray-700 leading-relaxed mb-3">
+                        Odalarımız geniş, konforlu ve benzersiz tasarıma sahiptir. Klasik Fas dekoru, 
+                        özel mobilyalar, yüksek kaliteli yataklar ve özel banyolar sunuyoruz. 
+                        Modern olanaklar arasında ücretsiz Wi-Fi, klima, minibar ve LCD TV bulunmaktadır.
+                      </p>
+                      <ul className="list-disc list-inside space-y-2 text-gray-700 mb-6">
+                        <li><strong>Deluxe Süit:</strong> Geleneksel Fas tarzı ile dekore edilmiş, geniş oturma alanı ve jakuzili banyo sunan lüks süitler.</li>
+                        <li><strong>Standart Oda:</strong> Modern olanaklarla donatılmış, konforlu ve sakin odalar.</li>
+                      </ul>
+
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3">Hizmetler:</h3>
+                      <ul className="list-disc list-inside space-y-2 text-gray-700 mb-6">
+                        <li>24 saat resepsiyon ve concierge hizmeti</li>
+                        <li>Geleneksel Fas mutfağından lezzetler sunan restoran</li>
+                        <li>Spa ve wellness merkezi: Geleneksel Fas masajları, sauna ve Türk hamamı</li>
+                        <li>Balkonlu ve teraslı odalar</li>
+                        <li>Özel havaalanı transferi (ücretli)</li>
+                        <li>Günlük tur ve keşif aktiviteleri</li>
+                      </ul>
+
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3">Tesis İçi Olanaklar:</h3>
+                      <ul className="list-disc list-inside space-y-2 text-gray-700">
+                        <li><strong>Şehir Turları:</strong> Marakeş&apos;in en ünlü mekanlarına turlar düzenlenir.</li>
+                        <li><strong>Havuz:</strong> Geleneksel bir iç avluda yer alan şık yüzme havuzu.</li>
+                        <li><strong>Yoga ve Meditasyon Alanı:</strong> Rahatlatıcı bir atmosferde yoga dersleri.</li>
+                        <li><strong>Bahçe ve Teras:</strong> Marakeş&apos;in sıcak havasını hissedebileceğiniz huzurlu bir bahçe ve teras.</li>
+                      </ul>
+                    </div>
+
+                    {/* En Son Baktıklarınız Bölümü */}
+                    <div className="mt-12">
+                      <div className="flex justify-between items-center mb-8">
+                        <h3 className="text-xl font-bold text-gray-800">En son baktıklarınız</h3>
+                      </div>
+                      <div className="flex gap-6" style={{ width: 'fit-content' }}>
+                        <OtelKarti
+                          id="1"
+                          isim="Riad Deluxe Hotel"
+                          konum="Marakeş, Fas"
+                          puan={4.7}
+                          yorumSayisi={120}
+                          fiyat={40500}
+                          paraBirimi="TL"
+                          geceSayisi={4}
+                          imageSrc={otelGorselleri[0].src}
+                          width="w-[292.5px]"
+                          height="h-[493.5px]"
+                        />
+                        <OtelKarti
+                          id="2"
+                          isim="Riad Deluxe Hotel"
+                          konum="Marakeş, Fas"
+                          puan={4.7}
+                          yorumSayisi={120}
+                          fiyat={40500}
+                          paraBirimi="TL"
+                          geceSayisi={4}
+                          imageSrc={otelGorselleri[1].src}
+                          width="w-[292.5px]"
+                          height="h-[493.5px]"
+                        />
+                        <OtelKarti
+                          id="3"
+                          isim="Riad Deluxe Hotel"
+                          konum="Marakeş, Fas"
+                          puan={4.7}
+                          yorumSayisi={120}
+                          fiyat={40500}
+                          paraBirimi="TL"
+                          geceSayisi={4}
+                          imageSrc={otelGorselleri[2].src}
+                          width="w-[292.5px]"
+                          height="h-[493.5px]"
+                        />
+                        <div className="relative">
+                          <Link href="/tumunu-gor" className="absolute -top-8 right-0 text-blue-600 hover:text-blue-700 font-semibold transition-colors z-10">
+                            Tümünü gör
+                          </Link>
+                          <OtelKarti
+                            id="4"
+                            isim="Riad Deluxe Hotel"
+                            konum="Marakeş, Fas"
+                            puan={4.7}
+                            yorumSayisi={120}
+                            fiyat={40500}
+                            paraBirimi="TL"
+                            geceSayisi={4}
+                            imageSrc={otelGorselleri[3].src}
+                            width="w-[292.5px]"
+                            height="h-[493.5px]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="degerlendirme" className="space-y-6">
+                    <div className="prose max-w-none">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Misafir Değerlendirmeleri</h3>
+                      <p className="text-gray-700 leading-relaxed">
+                        Bu bölümde misafirlerimizin deneyimleri ve değerlendirmeleri yer alacaktır.
+                      </p>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="harita" className="space-y-6">
+                    <div className="prose max-w-none">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Harita</h3>
+                      <p className="text-gray-700 leading-relaxed">
+                        Bu bölümde otel konumu ve harita bilgileri yer alacaktır.
+                      </p>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </div>
+            </div>
+
+            {/* Sağ Taraf - Kartlar */}
+            <div className="w-full lg:w-96 space-y-8">
+              <RezervasyonKarti otelData={otelVerisi} />
+              <OzelliklerGrid otelData={otelVerisi} />
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
