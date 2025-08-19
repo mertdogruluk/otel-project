@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 
+
 import  prisma  from "./config/db.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import { findOrCreateDirectChat, isUserParticipantOfChat, getCounterpartIds } from "./services/chatService.js";
@@ -14,6 +15,7 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+ 
 
 // --- Middleware
 app.use(cors({ origin: process.env.CLIENT_ORIGIN?.split(",") || "*", credentials: true }));

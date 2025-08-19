@@ -4,7 +4,7 @@
   "main": "server.js ",
   "type": "module",
   "scripts": {
-    "test":  "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "jest": "^30.0.5",
-    "prisma": "^6.14.0"
+    "prisma": "^6.14.0",
+    "socket.io-client": "^4.8.1"
   }
 }
