@@ -50,7 +50,6 @@ const authenticateToken = async (req, res, next) => {
 
     // Kullanıcı bilgilerini request nesnesine ekle
     req.user = user;
-    
     // Sonraki middleware'e geç
     next();
 
@@ -82,7 +81,7 @@ const authenticateToken = async (req, res, next) => {
 
 /**
  * Belirli roller için yetkilendirme middleware'i
- * @param {string[]} allowedRoles - İzin verilen roller dizisi
+ * @param {string[]} allowedRoles - Prisma enum değerleri: CUSTOMER, HOTEL_OWNER, SUPPORT
  */
 const authorizeRoles = (allowedRoles) => {
   return (req, res, next) => {
@@ -107,13 +106,13 @@ const authorizeRoles = (allowedRoles) => {
 };
 
 /**
- * Sadece kendi verilerine erişim kontrolü
- * @param {string} resourceUserId - Erişilmek istenen kaynağın kullanıcı ID'si
+ * Sahiplik kontrolü
+ * @param {string} resourceUserId - Erişilmek istenen kaynağın user_id'si
  */
-const authorizeOwnResource = (resourceUserId) => {
+const authorizeOwnResource = (resourceUserId, allowSupport = true) => {
   return (req, res, next) => {
-    
-    if (req.user.role === 'SUPPORT') {
+    // Opsiyonel: SUPPORT rolü tüm kaynaklara erişebilir
+    if (allowSupport && req.user.role === 'SUPPORT') {
       return next();
     }
 
