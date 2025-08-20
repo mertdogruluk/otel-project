@@ -25,7 +25,7 @@ const authenticateToken = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
     // Token'dan kullanıcı ID'sini al
-    const userId = decoded.userId;
+    const userId = decoded.user_id;
     
     // Kullanıcıyı veritabanından bul
     const user = await prisma.user.findUnique({
