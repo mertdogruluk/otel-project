@@ -112,8 +112,8 @@ const authorizeRoles = (allowedRoles) => {
  */
 const authorizeOwnResource = (resourceUserId) => {
   return (req, res, next) => {
-    // Admin kullanıcılar herkese erişebilir
-    if (req.user.role === 'ADMIN') {
+    
+    if (req.user.role === 'SUPPORT') {
       return next();
     }
 
