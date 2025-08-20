@@ -8,6 +8,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum MessageStatus{
+  SEND
+  DELIVERED
+  READ
+}
+
 enum UserRole {
   CUSTOMER
   HOTEL_OWNER
@@ -28,6 +34,7 @@ model User {
   phone        String?
   role         UserRole       @default(CUSTOMER)
   created_at   DateTime       @default(now())
+  is_online    Boolean        @default(false)
 
   hotels       Hotel[]        @relation("UserHotels")
   reservations Reservation[]  @relation("UserReservations")
@@ -113,6 +120,7 @@ model Message {
   sender_id   Int
   content     String
   created_at  DateTime @default(now())
+  status      MessageStatus @default(SEND)
 
   chat   Chat @relation(fields: [chat_id], references: [chat_id])
   sender User @relation("MessageSender", fields: [sender_id], references: [user_id])
