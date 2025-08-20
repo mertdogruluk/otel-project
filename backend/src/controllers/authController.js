@@ -60,7 +60,7 @@ class AuthController {
 
       // JWT token oluştur
       const token = jwt.sign(
-        { userId: user.user_id, email: user.email, role: user.role },
+        { user_id: user.user_id, email: user.email, role: user.role },
         process.env.JWT_SECRET || 'fallback-secret',
         { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
       );
@@ -114,7 +114,7 @@ class AuthController {
       }
 
       const token = jwt.sign(
-        { userId: user.user_id, email: user.email, role: user.role },
+        { user_id: user.user_id, email: user.email, role: user.role },
         process.env.JWT_SECRET || 'fallback-secret',
         { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
       );
@@ -143,7 +143,7 @@ class AuthController {
   async getProfile(req, res) {
     try {
       const user = await prisma.user.findUnique({
-        where: { user_id: req.user.userId }
+        where: { user_id: req.user.user_id }
       });
 
       if (!user) {
@@ -188,7 +188,7 @@ class AuthController {
       }
 
       const user = await prisma.user.findUnique({
-        where: { user_id: req.user.userId }
+        where: { user_id: req.user.user_id }
       });
 
       if (!user) {
@@ -203,7 +203,7 @@ class AuthController {
       const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
       await prisma.user.update({
-        where: { user_id: req.user.userId },
+        where: { user_id: req.user.user_id },
         data: { password: hashedNewPassword }
       });
 
@@ -233,10 +233,10 @@ class AuthController {
    */
   async refreshToken(req, res) {
     try {
-      const { userId } = req.user;
+      const { user_id } = req.user;
 
       const user = await prisma.user.findUnique({
-        where: { user_id: userId }
+        where: { user_id }
       });
 
       if (!user) {
@@ -244,7 +244,7 @@ class AuthController {
       }
 
       const newToken = jwt.sign(
-        { userId: user.user_id, email: user.email, role: user.role },
+        { user_id: user.user_id, email: user.email, role: user.role },
         process.env.JWT_SECRET || 'fallback-secret',
         { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
       );
