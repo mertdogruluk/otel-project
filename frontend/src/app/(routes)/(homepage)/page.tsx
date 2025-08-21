@@ -1,4 +1,5 @@
 import HomePageCarousel from "@/components/carousel/HomePageCarousel";
+import CategoriesInput from "@/components/forms/CategoriesInput";
 import DatePicker from "@/components/forms/DatePicker";
 import React from "react";
 
@@ -30,6 +31,18 @@ function HomePage() {
       {/* Date Picker Form Section */}
       <div className="flex justify-center -mt-22 mb-10 relative z-10">
         <DatePicker />
+      </div>
+
+      {/* Popular Categories Section */}
+      <div className="flex justify-start pl-24 pt-5 pb-12">
+        <h3 className="font-opensans font-bold text-4xl">
+          Popüler Kategoriler
+        </h3>
+      </div>
+
+      {/* Popular Categories Links */}
+      <div className="flex justify-center mb-10">
+       <CategoriesInput />
       </div>
     </>
   );
