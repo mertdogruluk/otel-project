@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 
 import  prisma  from "./config/db.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 import { findOrCreateDirectChat, isUserParticipantOfChat, getCounterpartIds } from "./services/chatService.js";
 import { saveMessage } from "./services/messageService.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -29,6 +30,8 @@ app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
 
 app.get("/", (_req, res) => res.send("API çalışıyor"));
+// --- Auth routes
+app.use("/auth", authRoutes);
 
 // --- Socket.io
 const io = new Server(server, {

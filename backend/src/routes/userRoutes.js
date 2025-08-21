@@ -8,11 +8,11 @@ import {
 
 const router = express.Router();
 
-// Tüm kullanıcıları gösteren api (sadece admin kullanıcılar)
+// Tüm kullanıcıları gösteren api (sadece support kullanıcılar)
 router.get(
   "/",
   authenticateToken,
-  authorizeRoles(["ADMIN"]),
+  authorizeRoles(["SUPPORT"]),
   async (req, res) => {
     try {
       const users = await prisma.user.findMany({
@@ -31,13 +31,13 @@ router.get(
   }
 );
 
-// Kullanıcı profilini görüntüleme (kendi profilini veya admin herkesi görebilir)
+// Kullanıcı profilini görüntüleme (kendi profilini veya support herkesi görebilir)
 router.get("/profile/:userId", authenticateToken, async (req, res) => {
   try {
     const { userId } = req.params;
 
     // Kendi profilini görüntüleme kontrolü
-    if (req.user.role !== "ADMIN" && req.user.user_id !== userId) {
+    if (req.user.role !== "SUPPORT" && req.user.user_id !== userId) {
       return res.status(403).json({
         success: false,
         message: "Bu profili görüntüleme yetkiniz bulunmamaktadır.",

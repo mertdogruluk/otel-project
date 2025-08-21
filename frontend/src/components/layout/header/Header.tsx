@@ -15,8 +15,8 @@ import {
 
 function Header() {
   return (
-    <header className="bg-white shadow-md py-5 ">
-      <div className="flex justify-between items-center max-w-7xl mx-auto px-6 flex-wrap">
+    <header className="bg-white shadow-md px-24 py-5">
+      <div className="flex justify-between items-center mx-auto flex-wrap">
         {/* Logo */}
         <Link href="/">
           <div className="flex items-center gap-2 cursor-pointer">
