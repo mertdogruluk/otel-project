@@ -5,8 +5,10 @@ import dotenv from "dotenv";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 
+
 import  prisma  from "./config/db.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 import { findOrCreateDirectChat, isUserParticipantOfChat, getCounterpartIds } from "./services/chatService.js";
 import { saveMessage } from "./services/messageService.js";
 
@@ -14,6 +16,7 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+ 
 
 // --- Middleware
 app.use(cors({ origin: process.env.CLIENT_ORIGIN?.split(",") || "*", credentials: true }));
@@ -22,6 +25,8 @@ app.use(express.json());
 // --- REST
 app.use("/api/chats", chatRoutes);
 app.get("/", (_req, res) => res.send("API çalışıyor"));
+// --- Auth routes
+app.use("/auth", authRoutes);
 
 // --- Socket.io
 const io = new Server(server, {
