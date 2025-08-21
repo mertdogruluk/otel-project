@@ -1,7 +1,8 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import http from "http";
 import cors from "cors";
-import dotenv from "dotenv";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 
@@ -10,19 +11,23 @@ import  prisma  from "./config/db.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import { findOrCreateDirectChat, isUserParticipantOfChat, getCounterpartIds } from "./services/chatService.js";
 import { saveMessage } from "./services/messageService.js";
-
-dotenv.config();
-
+import userRoutes from "./routes/userRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
 const app = express();
 const server = http.createServer(app);
  
 
-// --- Middleware
+// --- Middlewarez
 app.use(cors({ origin: process.env.CLIENT_ORIGIN?.split(",") || "*", credentials: true }));
 app.use(express.json());
 
 // --- REST
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/chats", chatRoutes);
+app.use("/api/messages", messageRoutes);
+
 app.get("/", (_req, res) => res.send("API çalışıyor"));
 
 // --- Socket.io
@@ -61,6 +66,12 @@ io.use(async (socket, next) => {
 io.on("connection", (socket) => {
   const { user_id: userId, role, name } = socket.user;
   console.log(`🔌 Connected: ${name} (${role}) #${userId}`);
+   
+  // Kullanıcı çevrimiçi oldu
+  prisma.User.update({
+    where: { user_id: userId },
+    data: { is_online: true },
+  }).catch(console.error);
 
   socket.join(`notify:${userId}`);
 
@@ -84,34 +95,62 @@ io.on("connection", (socket) => {
     }
   });
 
-  // --- Mesaj gönder
-  socket.on("message:send", async ({ chatId, content }, ack) => {
-    try {
-      if (!chatId || !content?.trim()) throw new Error("chatId ve content gerekli");
+// socket event
+socket.on("message:send", async ({ chatId, content }, ack) => {
+  try {
+    if (!chatId || !content?.trim()) throw new Error("chatId ve content gerekli");
 
-      const allowed = await isUserParticipantOfChat(userId, Number(chatId));
-      if (!allowed) throw new Error("Bu sohbete mesaj gönderme yetkiniz yok");
+    const allowed = await isUserParticipantOfChat(userId, Number(chatId));
+    if (!allowed) throw new Error("Bu sohbete mesaj gönderme yetkiniz yok");
 
-      const saved = await saveMessage({ chatId: Number(chatId), senderId: userId, text: content.trim() });
+    const saved = await saveMessage({ chatId: Number(chatId), senderId: userId, text: content.trim() });
 
-      io.to(`chat:${chatId}`).emit("message:new", saved);
+    // Mesajı tüm chat odasına gönder
+    io.to(`chat:${chatId}`).emit("message:new", saved);
 
-      const others = await getCounterpartIds(Number(chatId), userId);
-      others.forEach((otherId) => {
-        io.to(`notify:${otherId}`).emit("notify:new-message", {
-          chatId: Number(chatId),
-          messageId: saved.message_id,
-          from: userId,
-        });
+    const others = await getCounterpartIds(Number(chatId), userId);
+
+    // Notify gönder
+    others.forEach((otherId) => {
+      io.to(`notify:${otherId}`).emit("notify:new-message", {
+        chatId: Number(chatId),
+        messageId: saved.message_id,
+        from: userId,
       });
+    });
 
-      ack?.({ ok: true, message: saved });
-    } catch (err) {
-      console.error("message:send error", err);
-      ack?.({ ok: false, error: err.message });
+    // --- Offline kullanıcıları kontrol et ve Nodemailer ile mail gönder
+    for (const otherId of others) {
+      try {
+        const user = await prisma.User.findUnique({
+          where: { user_id: otherId },
+          select: { email: true, is_online: true, name: true },
+        });
+
+        if (user && !user.is_online && user.email) {
+          await sendEmail(
+            user.email,
+            `Yeni mesaj: ${content.slice(0, 30)}...`,
+            `Merhaba ${user.name},\n\nYeni bir mesaj aldınız:\n\n"${content}"\n\nOtel Destek`
+          );
+          console.log(`Mail gönderildi: ${user.email}`);
+        } else {
+          console.log(`Mail gönderilmedi (online olabilir veya kullanıcı yok): ${user?.email || "bilinmiyor"}`);
+        }
+      } catch (err) {
+        console.error("Mail gönderilemedi:", err);
+      }
     }
-  });
 
+    // Ack hemen dönüyor
+    ack?.({ ok: true, message: saved });
+  } catch (err) {
+    console.error("message:send error", err);
+    ack?.({ ok: false, error: err.message });
+  }
+});
+
+   
   // --- Typing
   socket.on("typing", ({ chatId, typing }) => {
     if (!chatId) return;
@@ -121,10 +160,21 @@ io.on("connection", (socket) => {
   // --- Disconnect
   socket.on("disconnect", () => {
     console.log(`❌ Disconnected: ${name} (${role}) #${userId}`);
+      // Kullanıcı çevrimdışı oldu
+    prisma.User.update({
+      where: { user_id: userId },
+      data: { is_online: false },
+    }).catch(console.error);
+    
   });
 });
 
-// --- Server başlat
+ 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(` Server http://localhost:${PORT} üzerinde`));
-export default app; // REST API için kullanılabilir
+
+app.listen(PORT, () => {
+  console.log(`✅ Server http://localhost:${PORT} üzerinde çalışıyor`);
+})
+.on("error", (err) => {
+  console.error("❌ Server başlatılamadı:", err);
+});
