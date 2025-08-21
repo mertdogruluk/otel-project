@@ -8,11 +8,11 @@ interface RoutesLayoutProps {
 
 function RoutesLayout({ children }: RoutesLayoutProps) {
   return (
-    <div className="flex flex-col min-h-screen">
+    <>
       <Header />
-      <main className="flex-grow container mx-auto py-4">{children}</main>
+      <main>{children}</main>
       <Footer />
-    </div>
+    </>
   );
 }
 
