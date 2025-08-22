@@ -163,7 +163,7 @@ export default function OtelSayfasi() {
 
                 {/* Küçük Görseller Grid */}
                 <div className="grid grid-cols-4 gap-4 w-full max-w-[800px] mb-8">
-                  {otelGorselleri.slice(1, 5).map((gorsel, index) => (
+                  {otelGorselleri.slice(1, 5).map((gorsel) => (
                     <div key={gorsel.id} className="relative w-full h-[150px] rounded-2xl overflow-hidden shadow-lg">
                       <Image
                         src={gorsel.src}

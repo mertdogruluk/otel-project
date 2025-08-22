@@ -21,21 +21,21 @@ const DashboardPage: React.FC = () => {
       title: 'Add User',
       description: 'Create new user account',
       icon: UserPlus,
-      href: '/users/add',
+      href: 'javascript:void(0)',
       color: 'bg-green-500 hover:bg-green-600'
     },
     {
       title: 'View Orders',
       description: 'Manage customer orders',
       icon: FileText,
-      href: '/orders',
+      href: 'javascript:void(0)',
       color: 'bg-orange-500 hover:bg-orange-600'
     },
     {
       title: 'Settings',
       description: 'Configure system settings',
       icon: Settings,
-      href: '/settings',
+      href: 'javascript:void(0)',
       color: 'bg-purple-500 hover:bg-purple-600'
     }
   ];
@@ -62,6 +62,101 @@ const DashboardPage: React.FC = () => {
 
       {/* Charts and Recent Orders */}
       <RecentOrders />
+
+      {/* Bottom Section - Best Shop Sellers and Product Overview */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Best Shop Sellers */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-lg font-semibold">Best Shop Sellers</CardTitle>
+            <Button variant="ghost" size="sm" className="text-sm text-muted-foreground">
+              View all
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[
+                { name: 'Robert', purchases: '73 Purchases', categories: 'Kitchen, Pets', total: '$1,000' },
+                { name: 'Calvin', purchases: '66 Purchases', categories: 'Health, Grocery', total: '$4,000' },
+                { name: 'Dwight', purchases: '15,800 Purchases', categories: 'Electronics', total: '$2,700' }
+              ].map((seller) => (
+                <div key={seller.name} className="flex items-center space-x-4">
+                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-medium">{seller.name.charAt(0)}</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{seller.name}</p>
+                    <p className="text-xs text-muted-foreground">{seller.purchases}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium">Categories</p>
+                    <p className="text-xs text-muted-foreground">{seller.categories}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium">Total</p>
+                    <p className="text-sm font-bold">{seller.total}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Product Overview */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-lg font-semibold">Product overview</CardTitle>
+            <Button variant="ghost" size="sm" className="text-sm text-muted-foreground">
+              View all
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="text-left text-xs text-muted-foreground">
+                    <th className="pb-3">Name</th>
+                    <th className="pb-3">Product ID</th>
+                    <th className="pb-3">Price</th>
+                    <th className="pb-3">Quantity</th>
+                    <th className="pb-3">Sale</th>
+                  </tr>
+                </thead>
+                <tbody className="space-y-2">
+                  {[
+                    { name: 'Soft Fluffy Cats', id: '#327', price: '$11.70', quantity: '28', status: 'On Sale' },
+                    { name: 'Taste of the Wild Formula Finder', id: '#380', price: '$8.99', quantity: '10', status: 'On Sale' },
+                    { name: 'Wellness Natural Food', id: '#126', price: '$5.32', quantity: '578', status: 'Low Stock' }
+                  ].map((product) => (
+                    <tr key={product.id} className="border-t">
+                      <td className="py-3">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
+                            <span className="text-xs">📦</span>
+                          </div>
+                          <span className="text-sm font-medium">{product.name}</span>
+                        </div>
+                      </td>
+                      <td className="py-3 text-sm text-muted-foreground">{product.id}</td>
+                      <td className="py-3 text-sm font-medium">{product.price}</td>
+                      <td className="py-3 text-sm">{product.quantity}</td>
+                      <td className="py-3">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          product.status === 'On Sale' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-orange-100 text-orange-800'
+                        }`}>
+                          {product.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Quick Actions */}
       <Card>
