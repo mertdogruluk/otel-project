@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 
@@ -9,10 +9,21 @@ interface AdminLayoutProps {
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false); // Desktop'ta açık, mobile'da kapalı
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Local storage'dan sidebar durumunu al
+  useEffect(() => {
+    const savedState = localStorage.getItem('sidebarCollapsed');
+    if (savedState !== null) {
+      setSidebarCollapsed(JSON.parse(savedState));
+    }
+  }, []);
 
   const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
+    const newState = !sidebarCollapsed;
+    setSidebarCollapsed(newState);
+    // Local storage'a kaydet
+    localStorage.setItem('sidebarCollapsed', JSON.stringify(newState));
   };
 
   return (
@@ -21,9 +32,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
       
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col overflow-hidden md:ml-64">
+      <div className={cn(
+        "flex flex-1 flex-col overflow-hidden transition-all duration-300 ease-in-out",
+        sidebarCollapsed ? "ml-16" : "ml-64"
+      )}>
         {/* Header */}
-        <Header onToggleSidebar={toggleSidebar} />
+        <Header onToggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
         
         {/* Main Content */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
@@ -33,5 +47,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     </div>
   );
 };
+
+// cn utility function'ı ekle
+function cn(...classes: (string | undefined | null | false)[]): string {
+  return classes.filter(Boolean).join(' ');
+}
 
 export default AdminLayout;
