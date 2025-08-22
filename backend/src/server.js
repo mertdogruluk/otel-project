@@ -11,6 +11,10 @@ import chatRoutes from "./routes/chatRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import { findOrCreateDirectChat, isUserParticipantOfChat, getCounterpartIds } from "./services/chatService.js";
 import { saveMessage } from "./services/messageService.js";
+import roomRoutes from "./routes/roomRoutes.js";
+
+
+
 
 dotenv.config();
 
@@ -27,7 +31,9 @@ app.use("/api/chats", chatRoutes);
 app.get("/", (_req, res) => res.send("API çalışıyor"));
 // --- Auth routes
 app.use("/auth", authRoutes);
-
+app.use("/api/rooms", roomRoutes);
+app.use("/api/hotels", (await import("./routes/hotelRoutes.js")).default);
+app.use("/api/reservations", (await import("./routes/reservationRoutes.js")).default);
 // --- Socket.io
 const io = new Server(server, {
   cors: { origin: process.env.CLIENT_ORIGIN?.split(",") || "*", methods: ["GET", "POST"] },
