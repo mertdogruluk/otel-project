@@ -93,7 +93,7 @@ const HotelTable: React.FC<HotelTableProps> = ({
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
-              {hotels.map((hotel, index) => (
+              {hotels.map((hotel) => (
                 <HotelCard
                   key={hotel.id}
                   hotel={hotel}

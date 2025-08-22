@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Eye, Edit, Trash2, Star } from 'lucide-react';
 
@@ -51,10 +52,12 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel, onDelete, onEdit, onView }
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="flex items-center">
           <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl flex items-center justify-center mr-4 border border-gray-200">
-            <img
+            <Image
               src={hotel.image}
               alt={hotel.name}
               className="w-10 h-10 object-cover rounded-lg"
+              width={40}
+              height={40}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = '/images/hotel-img.png'; // Fallback image

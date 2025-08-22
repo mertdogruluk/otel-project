@@ -1,65 +1,63 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MoreHorizontal, TrendingUp, TrendingDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-interface Product {
-  id: string;
-  name: string;
-  image: string;
-  items: number;
-  couponCode: string;
-  sales: number;
-  stock: number;
-  price: string;
-}
+// interface Product {
+//   id: string;
+//   name: string;
+//   image: string;
+//   items: number;
+//   couponCode: string;
+//   sales: number;
+//   stock: number;
+//   price: string;
+// }
 
-const topProducts: Product[] = [
-  {
-    id: '1',
-    name: 'Patimax Fragrance Long...',
-    image: '/admin/images/products/1.png',
-    items: 100,
-    couponCode: 'Sflat',
-    sales: 1500,
-    stock: 85,
-    price: '$25.00'
-  },
-  {
-    id: '2',
-    name: 'Sunglasses Style',
-    image: '/admin/images/products/2.png',
-    items: 75,
-    couponCode: 'Summer',
-    sales: 1200,
-    stock: 60,
-    price: '$45.00'
-  },
-  {
-    id: '3',
-    name: 'Camera Lens 4K',
-    image: '/admin/images/products/3.png',
-    items: 50,
-    couponCode: 'Tech20',
-    sales: 800,
-    stock: 25,
-    price: '$120.00'
-  },
-  {
-    id: '4',
-    name: 'Wireless Headphones',
-    image: '/admin/images/products/4.png',
-    items: 90,
-    couponCode: 'Audio',
-    sales: 1800,
-    stock: 70,
-    price: '$85.00'
-  }
-];
+// const topProducts: Product[] = [
+//   {
+//     id: '1',
+//     name: 'Patimax Fragrance Long...',
+//     image: '/admin/images/products/1.png',
+//     items: 100,
+//     couponCode: 'Sflat',
+//     sales: 1500,
+//     stock: 85,
+//     price: '$25.00'
+//   },
+//   {
+//     id: '2',
+//     name: 'Sunglasses Style',
+//     image: '/admin/images/products/2.png',
+//     items: 75,
+//     couponCode: 'Summer',
+//     sales: 1200,
+//     stock: 60,
+//     price: '$45.00'
+//   },
+//   {
+//     id: '3',
+//     name: 'Camera Lens 4K',
+//     image: '/admin/images/products/3.png',
+//     items: 50,
+//     couponCode: 'Tech20',
+//     sales: 800,
+//     stock: 25,
+//     price: '$120.00'
+//   },
+//   {
+//     id: '4',
+//     name: 'Wireless Headphones',
+//     image: '/admin/images/products/4.png',
+//     items: 90,
+//     couponCode: 'Audio',
+//     sales: 1800,
+//     stock: 70,
+//     price: '$85.00'
+//   }
+// ];
 
 // Mock data for countries and orders
 const countriesData = [
@@ -90,11 +88,11 @@ const earningsData = [
   { month: 'Aug', revenue: 36000, profit: 27000 }
 ];
 
-const productOverviewData = [
-  { id: 1, name: 'Soft Fluffy Cats', productId: '#327', price: '$11.70', quantity: 28, status: 'On Sale' },
-  { id: 2, name: 'Taste of the Wild Formula Finder', productId: '#380', price: '$8.99', quantity: 10, status: 'On Sale' },
-  { id: 3, name: 'Wellness Natural Food', productId: '#126', price: '$5.32', quantity: 578, status: 'Low Stock' }
-];
+// const productOverviewData = [
+//   { id: 1, name: 'Soft Fluffy Cats', productId: '#327', price: '$11.70', quantity: 28, status: 'On Sale' },
+//   { id: 2, name: 'Taste of the Wild Formula Finder', productId: '#380', price: '$8.99', quantity: 10, status: 'On Sale' },
+//   { id: 3, name: 'Wellness Natural Food', productId: '#126', price: '$5.32', quantity: 578, status: 'Low Stock' }
+// ];
 
 const commentsData = [
   { id: 1, name: 'Kathryn Murphy', rating: 4, comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras nec dolor vel est interdum' },
@@ -215,7 +213,7 @@ const RecentOrders: React.FC = () => {
                   </div>
                 </div>
                 <div className="h-24 bg-gradient-to-r from-blue-100 to-blue-50 rounded-lg flex items-end justify-around p-2">
-                  {earningsData.map((item, index) => (
+                  {earningsData.map((item) => (
                     <div key={item.month} className="flex flex-col items-center space-y-1">
                       <div className="bg-blue-500 rounded-sm" style={{width: '8px', height: `${(item.revenue / 50000) * 60}px`}}></div>
                       <span className="text-xs text-muted-foreground">{item.month}</span>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,8 +11,24 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ChevronDown, Upload, X, Star, Wifi, Car, Utensils, Dumbbell, Waves } from 'lucide-react';
 
 interface AddHotelFormProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: FormData) => void;
   onCancel: () => void;
+}
+
+interface FormData {
+  hotelName: string;
+  location: string;
+  city: string;
+  country: string;
+  stars: number;
+  price: string;
+  description: string;
+  checkIn: string;
+  checkOut: string;
+  totalRooms: string;
+  amenities: string[];
+  roomTypes: string[];
+  images: File[];
 }
 
 const AddHotelForm: React.FC<AddHotelFormProps> = ({ onSubmit, onCancel }) => {
@@ -364,10 +381,12 @@ const AddHotelForm: React.FC<AddHotelFormProps> = ({ onSubmit, onCancel }) => {
                   {formData.images.slice(0, 4).map((image, index) => (
                     <div key={index} className="relative">
                       <div className="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-                        <img
+                        <Image
                           src={URL.createObjectURL(image)}
                           alt={`Hotel ${index + 1}`}
                           className="w-full h-full object-cover"
+                          width={128}
+                          height={128}
                         />
                       </div>
                       <button

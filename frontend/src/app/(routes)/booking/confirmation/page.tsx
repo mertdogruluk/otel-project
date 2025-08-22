@@ -1,7 +1,5 @@
-import PaymentForm from "@/components/forms/PaymentForm";
 import ProgressBar from "@/components/forms/ProgressBar";
 import Rating from "@/components/forms/Rating";
-import ReservationSummary from "@/components/forms/ReservationSummary";
 import Image from "next/image";
 import React from "react";
 
