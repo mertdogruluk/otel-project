@@ -12,7 +12,9 @@ import {
   HelpCircle,
   MessageCircle,
   ChevronDown,
-  Menu
+  Menu,
+  X,
+  ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -40,7 +42,7 @@ const menuItems: MenuItem[] = [
     icon: ShoppingCart,
     children: [
       { id: 'add-product', title: 'Add Product', icon: ShoppingCart, href: '/products/add' },
-      { id: 'product-list', title: 'Product List', icon: ShoppingCart, href: '/products' },
+      { id: 'product-list', title: 'Product List', icon: ShoppingCart, href: '/products/list' },
       { id: 'orders', title: 'Order List', icon: ShoppingCart, href: '/orders' },
     ]
   },
@@ -91,8 +93,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false, onToggle }) => {
   };
 
   const MenuSection = ({ title, items }: { title: string; items: MenuItem[] }) => (
-    <div className="mb-8">
-      <h3 className="mb-4 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+    <div className="mb-6">
+      <h3 className={cn(
+        "mb-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider transition-all duration-200",
+        isCollapsed ? "opacity-0" : "opacity-100"
+      )}>
         {title}
       </h3>
       <nav className="space-y-1">
@@ -103,21 +108,32 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false, onToggle }) => {
                 <button
                   onClick={() => toggleMenu(item.id)}
                   className={cn(
-                    "flex items-center w-full px-4 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                    "flex items-center w-full px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200",
                     "hover:bg-gray-100 hover:text-gray-900",
-                    activeMenu === item.id ? "bg-gray-100 text-gray-900" : "text-gray-600"
+                    activeMenu === item.id ? "bg-gray-100 text-gray-900" : "text-gray-600",
+                    isCollapsed ? "justify-center px-2" : "justify-between"
                   )}
+                  title={isCollapsed ? item.title : undefined}
                 >
-                  <item.icon className="mr-3 h-5 w-5" />
-                  <span className="flex-1 text-left">{item.title}</span>
-                  <ChevronDown 
-                    className={cn(
-                      "h-4 w-4 transition-transform",
-                      activeMenu === item.id ? "rotate-180" : ""
+                  <div className="flex items-center">
+                    <item.icon className={cn(
+                      "h-5 w-5",
+                      isCollapsed ? "mr-0" : "mr-3"
+                    )} />
+                    {!isCollapsed && (
+                      <span className="flex-1 text-left">{item.title}</span>
                     )}
-                  />
+                  </div>
+                  {!isCollapsed && (
+                    <ChevronDown 
+                      className={cn(
+                        "h-4 w-4 transition-transform",
+                        activeMenu === item.id ? "rotate-180" : ""
+                      )}
+                    />
+                  )}
                 </button>
-                {activeMenu === item.id && (
+                {!isCollapsed && activeMenu === item.id && (
                   <div className="mt-1 ml-8 space-y-1">
                     {item.children.map((child) => (
                       <Link
@@ -135,12 +151,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false, onToggle }) => {
               <Link
                 href={item.href || '#'}
                 className={cn(
-                  "flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors",
-                  "hover:bg-gray-100 hover:text-gray-900 text-gray-600"
+                  "flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200",
+                  "hover:bg-gray-100 hover:text-gray-900 text-gray-600",
+                  isCollapsed ? "justify-center px-2" : ""
                 )}
+                title={isCollapsed ? item.title : undefined}
               >
-                <item.icon className="mr-3 h-5 w-5" />
-                {item.title}
+                <item.icon className={cn(
+                  "h-5 w-5",
+                  isCollapsed ? "mr-0" : "mr-3"
+                )} />
+                {!isCollapsed && item.title}
               </Link>
             )}
           </div>
@@ -151,63 +172,116 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed = false, onToggle }) => {
 
   return (
     <>
-      {/* Overlay for mobile */}
+      {/* Mobile Overlay */}
       {!isCollapsed && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
           onClick={() => onToggle?.()}
         />
       )}
       
+      {/* Sidebar */}
       <div className={cn(
-        "fixed left-0 top-0 z-40 h-screen w-64 transform bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out",
-        isCollapsed ? "-translate-x-full" : "translate-x-0"
+        "fixed left-0 top-0 z-40 h-screen bg-white border-r border-gray-200 transition-all duration-300 ease-in-out",
+        "shadow-lg",
+        isCollapsed ? "w-16" : "w-64"
       )}>
-        {/* Logo Section */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <Link href="/" className="flex items-center space-x-2">
+        {/* Header */}
+        <div className={cn(
+          "flex items-center border-b border-gray-200 transition-all duration-200",
+          isCollapsed ? "justify-center p-3" : "justify-between p-4"
+        )}>
+          {!isCollapsed && (
+            <Link href="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">O</span>
+              </div>
+              <span className="text-xl font-bold text-gray-900">Otel Admin</span>
+            </Link>
+          )}
+          
+          {isCollapsed && (
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">O</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">Otel Admin</span>
-          </Link>
+          )}
+
+          {/* Toggle Button */}
           <button
             onClick={onToggle}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className={cn(
+              "p-2 rounded-lg hover:bg-gray-100 transition-colors",
+              isCollapsed ? "absolute -right-3 top-6 bg-white border border-gray-200 shadow-md" : ""
+            )}
+            title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
-            <Menu className="h-5 w-5 text-gray-500" />
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4 text-gray-600" />
+            ) : (
+              <X className="h-5 w-5 text-gray-500" />
+            )}
           </button>
         </div>
 
-        {/* Menu Sections */}
+        {/* Menu Content */}
         <div className="flex-1 overflow-y-auto p-4">
           <MenuSection title="Main Home" items={menuItems.slice(0, 1)} />
           <MenuSection title="Ecommerce" items={menuItems.slice(1, 3)} />
           <MenuSection title="Other" items={menuItems.slice(3, -2)} />
           
           {/* Support Section */}
-          <div className="mb-8">
-            <h3 className="mb-4 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          <div className={cn(
+            "mb-6 transition-all duration-200",
+            isCollapsed ? "opacity-0" : "opacity-100"
+          )}>
+            <h3 className="mb-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
               Support
             </h3>
             <nav className="space-y-1">
               <Link
                 href="#"
-                className="flex items-center px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                className={cn(
+                  "flex items-center px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition-colors",
+                  isCollapsed ? "justify-center px-2" : ""
+                )}
+                title={isCollapsed ? "Help center" : undefined}
               >
-                <HelpCircle className="mr-3 h-5 w-5" />
-                Help center
+                <HelpCircle className={cn(
+                  "h-5 w-5",
+                  isCollapsed ? "mr-0" : "mr-3"
+                )} />
+                {!isCollapsed && "Help center"}
               </Link>
               <Link
                 href="#"
-                className="flex items-center px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                className={cn(
+                  "flex items-center px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition-colors",
+                  isCollapsed ? "justify-center px-2" : ""
+                )}
+                title={isCollapsed ? "FAQs" : undefined}
               >
-                <MessageCircle className="mr-3 h-5 w-5" />
-                FAQs
+                <MessageCircle className={cn(
+                  "h-5 w-5",
+                  isCollapsed ? "mr-0" : "mr-3"
+                )} />
+                {!isCollapsed && "FAQs"}
               </Link>
             </nav>
           </div>
         </div>
+
+        {/* Collapsed State Toggle Button (Bottom) */}
+        {isCollapsed && (
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+            <button
+              onClick={onToggle}
+              className="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-lg"
+              title="Expand Sidebar"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
