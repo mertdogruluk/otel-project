@@ -13,7 +13,6 @@ import authRoutes from "./routes/authRoutes.js";
 import { findOrCreateDirectChat, isUserParticipantOfChat, getCounterpartIds } from "./services/chatService.js";
 import { saveMessage } from "./services/messageService.js";
 import userRoutes from "./routes/userRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 const app = express();
 const server = http.createServer(app);
@@ -51,7 +50,7 @@ io.use(async (socket, next) => {
 
     const token = bearer.startsWith?.("Bearer ") ? bearer.slice(7) : bearer;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded?.userId || !decoded?.role) return next(new Error("UNAUTHORIZED"));
+    if (!decoded?.user_id || !decoded?.role) return next(new Error("UNAUTHORIZED"));
 
     // Kullanıcıyı şemaya uygun çek
     const user = await prisma.User.findUnique({
@@ -177,7 +176,7 @@ socket.on("message:send", async ({ chatId, content }, ack) => {
  
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`✅ Server http://localhost:${PORT} üzerinde çalışıyor`);
 })
 .on("error", (err) => {
