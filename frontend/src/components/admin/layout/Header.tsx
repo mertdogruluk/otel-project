@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Search, Bell, User, Mail, FileText, Settings, Headphones, LogOut, Menu } from 'lucide-react';
+import { Search, Bell, User, Mail, FileText, Settings, Headphones, LogOut, Menu, ChevronRight } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,9 +16,10 @@ import {
 
 interface HeaderProps {
   onToggleSidebar?: () => void;
+  sidebarCollapsed?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
+const Header: React.FC<HeaderProps> = ({ onToggleSidebar, sidebarCollapsed = false }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -28,6 +29,22 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
+      {/* Sidebar Toggle Button - Desktop */}
+      <Button
+        variant="outline"
+        size="icon"
+        className="shrink-0 hidden md:flex"
+        onClick={onToggleSidebar}
+        title={sidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+      >
+        {sidebarCollapsed ? (
+          <ChevronRight className="h-5 w-5" />
+        ) : (
+          <Menu className="h-5 w-5" />
+        )}
+        <span className="sr-only">Toggle sidebar</span>
+      </Button>
+
       {/* Mobile menu button - visible on mobile */}
       <Button
         variant="outline"

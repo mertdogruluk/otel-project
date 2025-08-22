@@ -1,7 +1,9 @@
 import HomePageCarousel from "@/components/carousel/HomePageCarousel";
-import CategoriesInput from "@/components/forms/CategoriesInput";
 import DatePicker from "@/components/forms/DatePicker";
 import React from "react";
+import PopularCategories from "@/components/forms/PopularCategories";
+import DestinationCarousel from "@/components/destinations/DestinationCarousel";
+import SpecialOffersSection from "@/components/specialoffers/SpecialOffersSection";
 
 function HomePage() {
   return (
@@ -41,8 +43,23 @@ function HomePage() {
       </div>
 
       {/* Popular Categories Links */}
+      <div className="flex justify-start pl-24 mb-10">
+        <PopularCategories />
+      </div>
+
+      {/* Destinations Section */}
+      <div className="flex justify-start pl-24 pt-5 pb-12">
+        <h3 className="font-opensans font-bold text-4xl">Destinasyonlar</h3>
+      </div>
+
+      {/* Destination Carousel */}
       <div className="flex justify-center mb-10">
-       <CategoriesInput />
+        <DestinationCarousel />
+      </div>
+
+      {/* Special Offers Section */}
+      <div className="flex justify-center mb-10">
+        <SpecialOffersSection />
       </div>
     </>
   );
