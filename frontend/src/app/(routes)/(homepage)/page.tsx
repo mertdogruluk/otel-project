@@ -58,7 +58,7 @@ function HomePage() {
       </div>
 
       {/* Special Offers Section */}
-      <div className="flex justify-center mb-10">
+      <div className="flex justify-center mb-20">
         <SpecialOffersSection />
       </div>
     </>
