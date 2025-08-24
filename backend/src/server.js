@@ -53,8 +53,8 @@ io.use(async (socket, next) => {
     if (!decoded?.user_id || !decoded?.role) return next(new Error("UNAUTHORIZED"));
 
     // Kullanıcıyı şemaya uygun çek
-    const user = await prisma.User.findUnique({
-      where: { user_id: decoded.userId },
+    const user = await prisma.user.findUnique({
+      where: { user_id: decoded.user_id }, 
       select: { user_id: true, role: true, name: true },
     });
     if (!user) return next(new Error("UNAUTHORIZED"));
@@ -72,7 +72,7 @@ io.on("connection", (socket) => {
   console.log(`🔌 Connected: ${name} (${role}) #${userId}`);
    
   // Kullanıcı çevrimiçi oldu
-  prisma.User.update({
+  prisma.user.update({
     where: { user_id: userId },
     data: { is_online: true },
   }).catch(console.error);
@@ -126,7 +126,7 @@ socket.on("message:send", async ({ chatId, content }, ack) => {
     // --- Offline kullanıcıları kontrol et ve Nodemailer ile mail gönder
     for (const otherId of others) {
       try {
-        const user = await prisma.User.findUnique({
+        const user = await prisma.user.findUnique({
           where: { user_id: otherId },
           select: { email: true, is_online: true, name: true },
         });
@@ -165,10 +165,10 @@ socket.on("message:send", async ({ chatId, content }, ack) => {
   socket.on("disconnect", () => {
     console.log(`❌ Disconnected: ${name} (${role}) #${userId}`);
       // Kullanıcı çevrimdışı oldu
-    prisma.User.update({
-      where: { user_id: userId },
-      data: { is_online: false },
-    }).catch(console.error);
+      prisma.user.update({
+        where: { user_id: userId },
+        data: { is_online: false },
+      }).catch(console.error);
     
   });
 });
