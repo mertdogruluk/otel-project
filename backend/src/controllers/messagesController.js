@@ -9,7 +9,9 @@ export const getChatMessages = async (req, res) => {
   try {
     const userId = req.user.user_id;
     const chatId = Number(req.params.chatId);
-
+    if (!Number.isFinite(chatId)) {
+      return res.status(400).json({ ok: false, error: "Geçersiz chatId" });
+    }
     // Chat katılımcısı mı kontrol
     const allowed = await isUserParticipantOfChat(userId, chatId);
     if (!allowed) {
@@ -29,13 +31,12 @@ export const getChatMessages = async (req, res) => {
 export const sendMessage = async (req, res) => {
   try {
     const senderId = req.user.user_id;
-const chatId = Number(req.params.chatId); // URL parametresinden alıyoruz
-const { content } = req.body;
+    const chatId = Number(req.params.chatId); // URL parametresinden alıyoruz
+    const { content } = req.body;
 
-if (!chatId || !content?.trim()) {
-  return res.status(400).json({ ok: false, error: "chatId ve content gerekli" });
-}
-
+    if (!Number.isFinite(chatId) || !content?.trim()) {
+      return res.status(400).json({ ok: false, error: "Geçersiz chatId veya boş içerik" });
+    }
 
     // Chat katılımcısı mı kontrol
     const allowed = await isUserParticipantOfChat(senderId, Number(chatId));
