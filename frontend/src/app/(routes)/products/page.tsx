@@ -30,7 +30,7 @@ function ProductPage() {
       {/* Hotel Filters and Hotels List Section */}
       <div className="flex flex-row justify-between gap-4">
         {/* Hotel Filters */}
-        <div>
+        <div className="mb-10 px-16">
           <HotelFilters />
         </div>
 
