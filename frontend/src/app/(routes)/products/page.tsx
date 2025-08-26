@@ -28,16 +28,19 @@ function ProductPage() {
       </div>
 
       {/* Hotel Filters and Hotels List Section */}
-      <div className="flex flex-row justify-between gap-4">
-        {/* Hotel Filters */}
-        <div>
+      <div className="px-24">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+          {/* Hotel Filters */}
           <HotelFilters />
-        </div>
-
-        {/* Hotels List and Pagination */}
-        <div className="flex flex-col gap-4">
-          <HotelsList />
-          <Pagination />
+          {/* Hotels List and Pagination - Flexible width on right */}
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col gap-6">
+              <HotelsList />
+              <div className="flex justify-end mb-10">
+                <Pagination />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>

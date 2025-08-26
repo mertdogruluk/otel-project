@@ -179,7 +179,7 @@ function DatePicker() {
                 onOpenChange={(open) => handleDropdownChange("city", open)}
               >
                 <DropdownMenuTrigger>
-                  <div className="flex flex-row gap-24 mt-2">
+                  <div className="flex flex-row gap-24 mt-2 cursor-pointer">
                     <p className="font-normal">{selectedCity || "Ara"}</p>
                     <ChevronDown
                       className={`w-5 h-5 transition-transform duration-200 ${
@@ -232,7 +232,7 @@ function DatePicker() {
                 onOpenChange={(open) => handleDropdownChange("checkIn", open)}
               >
                 <DropdownMenuTrigger>
-                  <div className="flex flex-row gap-5 mt-2">
+                  <div className="flex flex-row gap-5 mt-2 cursor-pointer">
                     <p className="font-normal">
                       {dateRange.checkIn
                         ? dateRange.checkIn.toLocaleDateString("tr-TR", {
@@ -404,7 +404,7 @@ function DatePicker() {
                 onOpenChange={(open) => handleDropdownChange("checkOut", open)}
               >
                 <DropdownMenuTrigger>
-                  <div className="flex flex-row gap-5 mt-2">
+                  <div className="flex flex-row gap-5 mt-2 cursor-pointer">
                     <p className="font-normal">
                       {dateRange.checkOut
                         ? dateRange.checkOut.toLocaleDateString("tr-TR", {
@@ -578,7 +578,7 @@ function DatePicker() {
                 }
               >
                 <DropdownMenuTrigger>
-                  <div className="flex flex-row gap-5 mt-2">
+                  <div className="flex flex-row gap-5 mt-2 cursor-pointer">
                     <p className="font-normal">
                       {personCount.adults + personCount.children} Kişi
                     </p>
