@@ -140,7 +140,7 @@ function HotelFilters() {
   return (
     <div style={{ width: "345px" }}>
       {/* Header - Outside the card */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-bold font-opensans text-gray-900 ml-7">
           Filtreler
         </h2>
