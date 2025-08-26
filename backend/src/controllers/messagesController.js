@@ -76,3 +76,17 @@ export const sendMessage = async (req, res) => {
     return res.status(500).json({ ok: false, error: err.message });
   }
 };
+export const deleteMessage = async (req, res) => {
+  try {
+    const messageId = Number(req.params.messageId);
+    if (!messageId) return res.status(400).json({ ok: false, error: "Geçersiz messageId" });
+
+    const deleted = await prisma.message.delete({
+      where: { message_id: messageId }
+    });
+
+    return res.json({ ok: true, deleted });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: err.message });
+  }
+};

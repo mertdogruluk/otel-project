@@ -35,9 +35,10 @@ router.get(
 router.get("/profile/:userId", authenticateToken, async (req, res) => {
   try {
     const { userId } = req.params;
+    const userIdInt = parseInt(userId, 10);
 
     // Kendi profilini görüntüleme kontrolü
-    if (req.user.role !== "SUPPORT" && req.user.user_id !== userId) {
+    if (req.user.role !== "SUPPORT" && req.user.user_id !== userIdInt) {
       return res.status(403).json({
         success: false,
         message: "Bu profili görüntüleme yetkiniz bulunmamaktadır.",
@@ -45,7 +46,7 @@ router.get("/profile/:userId", authenticateToken, async (req, res) => {
     }
 
     const user = await prisma.user.findUnique({
-      where: { user_id: userId },
+      where: { user_id: userIdInt },  // ✅ artık int
       select: {
         user_id: true,
         name: true,
@@ -62,11 +63,18 @@ router.get("/profile/:userId", authenticateToken, async (req, res) => {
       });
     }
 
-    res.json({ success: true, data: user });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res.json({ success: true, user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Sunucu hatası.",
+    });
   }
 });
+
+
+   
 
 // Kullanıcı profilini güncelleme (sadece kendi profilini)
 router.put(
