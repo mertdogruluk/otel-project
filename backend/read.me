@@ -140,6 +140,7 @@ Socket.io ile gerçek zamanlı chat bağlantısı sağlandı:
     - 1-1 chat ve mesaj akışı çalışır durumda..
 
 ---------------------------------------------
+25 Ağustos
 - Socket.io `message:send` eventinde chatId ve senderId tip güvenliği eklendi (Number dönüşümü)
 - Offline kullanıcı kontrolü ve notify sistemi güncellendi
 - saveMessage fonksiyonunda NaN ve boş içerik kontrolü eklendi
@@ -148,3 +149,14 @@ Socket.io ile gerçek zamanlı chat bağlantısı sağlandı:
 - Kod okunabilirliği için değişken isimleri (chatIdNum vb.) optimize edildi
 ---------------------------------------
 JWT token expiration süresi (`JWT_EXPIRES_IN=1h`) önemli ve eksikti, eklendi.
+
+----------------------------------------------------
+26 ağustos 
+tüm api routes kısmı test edildi.
+------------------------------------
+27 Ağustos 
+Kullanıcıların çevrimdışı durumlarına göre (support, hotel_owner) özel mesajlar eklendi.
+Hata mesajları daha açıklayıcı hale getirildi.
+"message:send" ve "chat:join" event'lerinde kullanıcı dostu geri bildirimler sağlandı.
+Genel kod okunabilirliği ve güvenlik kontrolleri sağlandı.
+Online/offline kontrolü ve rol bazlı offline bildirimler eklendi

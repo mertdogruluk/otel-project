@@ -14,9 +14,15 @@ export const saveMessage = async ({ chatId, senderId, text }) => {
   senderId = Number(senderId);
   text = text?.trim();
 
-  if (isNaN(chatId) || isNaN(senderId) || !text) 
-    throw new Error("Geçersiz chatId, senderId veya text");
-
+  if (isNaN(chatId)) {
+    throw new Error("Geçersiz chatId. Lütfen geçerli bir sohbet ID'si sağlayın.");
+  }
+  if (isNaN(senderId)) {
+    throw new Error("Geçersiz senderId. Lütfen geçerli bir kullanıcı ID'si sağlayın.");
+  }
+  if (!text) {
+    throw new Error("Mesaj içeriği boş olamaz. Lütfen bir mesaj girin.");
+  }
 
   // Gönderen kullanıcıyı bul ve rolünü al
   const sender = await prisma.user.findUnique({
@@ -52,8 +58,14 @@ export const saveMessage = async ({ chatId, senderId, text }) => {
  */
 export const getMessagesByChatId = async (chatId, { take = 100, cursor } = {}) => {
   chatId = Number(chatId);
-  cursor = cursor ? Number(cursor) : undefined;
-
+  cursor = cursor ? Number(cursor) : undefined; 
+  
+  if (isNaN(chatId)) {
+    throw new Error("Geçersiz chatId. Lütfen geçerli bir sohbet ID'si sağlayın.");
+  }
+  if (cursor && isNaN(cursor)) {
+    throw new Error("Geçersiz cursor. Lütfen geçerli bir mesaj ID'si sağlayın.");
+  }
   return prisma.message.findMany({
     where: { chat_id: chatId },
     orderBy: { created_at: "asc" },

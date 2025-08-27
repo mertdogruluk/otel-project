@@ -32,7 +32,9 @@ export const findOrCreateDirectChat = async (userIdA, userIdB) => {
     prisma.user.findUnique({ where: { user_id: userIdB }, select: { user_id: true, role: true } }),
   ]);
 
-  if (!userA || !userB) throw new Error("Kullanıcı(lar) bulunamadı");
+    if (!userA) throw new Error(`Kullanıcı bulunamadı: ID ${userIdA}`);
+  if (!userB) throw new Error(`Kullanıcı bulunamadı: ID ${userIdB}`);
+
 
   //  Chat oluştur ve katılımcıları ekle
   const chat = await prisma.chat.create({
@@ -57,9 +59,14 @@ export const findOrCreateDirectChat = async (userIdA, userIdB) => {
  * @returns {Promise<boolean>}
  */
 export const isUserParticipantOfChat = async (userId, chatId) => {
+  if (Number.isNaN(userId) || Number.isNaN(chatId)) {
+    throw new Error("Geçersiz kullanıcı veya sohbet ID'si. Lütfen geçerli bir ID sağlayın.");
+  }
+
   const count = await prisma.chatParticipant.count({
     where: { chat_id: chatId, user_id: userId },
   });
+
   return count > 0;
 };
 
@@ -70,9 +77,14 @@ export const isUserParticipantOfChat = async (userId, chatId) => {
  * @returns {Promise<number[]>}
  */
 export const getCounterpartIds = async (chatId, requesterId) => {
+  if (Number.isNaN(chatId) || Number.isNaN(requesterId)) {
+    throw new Error("Geçersiz sohbet veya kullanıcı ID'si. Lütfen geçerli bir ID sağlayın.");
+  }
+
   const parts = await prisma.chatParticipant.findMany({
     where: { chat_id: chatId },
     select: { user_id: true },
   });
+
   return parts.map(p => p.user_id).filter(id => String(id) !== String(requesterId));
 };

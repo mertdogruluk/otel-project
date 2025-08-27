@@ -21,7 +21,9 @@ export const getChatMessages = async (req, res) => {
     const messages = await getMessagesByChatId(chatId);
     return res.json({ ok: true, messages });
   } catch (err) {
-    return res.status(500).json({ ok: false, error: err.message });
+    console.error("getChatMessages hatası:", err);
+    return res.status(500).json({ ok: false, error: "Mesajlar alınırken bir hata oluştu. Lütfen daha sonra tekrar deneyin." });
+    
   }
 };
 
@@ -64,7 +66,7 @@ export const sendMessage = async (req, res) => {
 
     for (const other of otherUsers) {
       if (!allowedRoles[req.user.role]?.includes(other.role)) {
-        return res.status(403).json({ ok: false, error: "Bu kullanıcı ile mesaj gönderemezsiniz" });
+        return res.status(403).json({ ok: false, error: "Bu kullanıcı ile mesajlaşma yetkiniz yok." });
       }
     }
 
@@ -73,13 +75,17 @@ export const sendMessage = async (req, res) => {
 
     return res.json({ ok: true, message });
   } catch (err) {
-    return res.status(500).json({ ok: false, error: err.message });
-  }
+   
+    console.error("deleteMessage hatası:", err);
+    return res.status(500).json({ ok: false, error: "Mesaj silinirken bir hata oluştu. Lütfen daha sonra tekrar deneyin." });
+  }  
 };
+//mesajı sil
 export const deleteMessage = async (req, res) => {
   try {
     const messageId = Number(req.params.messageId);
-    if (!messageId) return res.status(400).json({ ok: false, error: "Geçersiz messageId" });
+    //messageId kontrolü
+    if (!messageId) return res.status(400).json({ ok: false, error: "Geçersiz messageId. Lütfen geçerli bir mesaj ID'si sağlayın." });
 
     const deleted = await prisma.message.delete({
       where: { message_id: messageId }
@@ -87,6 +93,8 @@ export const deleteMessage = async (req, res) => {
 
     return res.json({ ok: true, deleted });
   } catch (err) {
-    return res.status(500).json({ ok: false, error: err.message });
+    console.error("deleteMessage hatası:", err);
+    return res.status(500).json({ ok: false, error: "Mesaj silinirken bir hata oluştu. Lütfen daha sonra tekrar deneyin." });
+  
   }
 };

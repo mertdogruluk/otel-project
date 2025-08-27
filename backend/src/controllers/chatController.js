@@ -9,11 +9,10 @@ export const startDirectChat = async (req, res) => {
   try {
     const userId = req.user.user_id; // auth middleware ile socket veya JWT'den geliyor
     const { targetUserId } = req.body;
-
-    if (!targetUserId) {
-      return res.status(400).json({ ok: false, error: "targetUserId gerekli" });
-    }
-
+    
+if (!targetUserId || Number.isNaN(Number(targetUserId))) {
+  return res.status(400).json({ ok: false, error: "Geçerli bir targetUserId gerekli" });
+}
     const chat = await findOrCreateDirectChat(userId, Number(targetUserId));
     return res.json({ ok: true, chat });
   } catch (err) {

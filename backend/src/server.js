@@ -64,16 +64,16 @@ io.use(async (socket, next) => {
       ? tokenStr.slice(7)
       : tokenStr;
 
-    if (!token) return next(new Error("UNAUTHORIZED"));
+    if (!token) return next(new Error("(UNAUTHORIZED)Token eksik. Lütfen giriş yapın"));
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded?.user_id || !decoded?.role)
-      return next(new Error("UNAUTHORIZED"));
+      return next(new Error("(UNAUTHORIZED)Geçersiz token. Lütfen tekrar giriş yapın."));
 
     const user = await prisma.user.findUnique({
       where: { user_id: decoded.user_id },
       select: { user_id: true, role: true, name: true },
     });
-    if (!user) return next(new Error("UNAUTHORIZED"));
+    if (!user) return next(new Error("(UNAUTHORIZED)Kullanıcı bulunamadı. Lütfen tekrar giriş yapın."));
 
     socket.user = {
       user_id: user.user_id,
@@ -82,22 +82,29 @@ io.use(async (socket, next) => {
     };
     next();
   } catch {
-    next(new Error("UNAUTHORIZED"));
+    next(new Error("(UNAUTHORIZED)Token doğrulama sırasında bir hata oluştu."));
   }
 });
 
 // === Socket connection
+const onlineUsers = new Map(); // key: userId, value: socket.id
 io.on("connection", (socket) => {
   const { user_id: userId, role, name } = socket.user;
   console.log(`🔌 Connected: ${name} (${role}) #${userId}`);
 
   // Kullanıcı çevrimiçi
+  onlineUsers.set(userId, socket.id);
   prisma.user
     .update({ where: { user_id: userId }, data: { is_online: true } })
     .catch(console.error);
 
   socket.join(`notify:${userId}`);
 
+   socket.on("disconnect", () => {
+    console.log(`❌ Disconnected: ${name} (${role}) #${userId}`);
+    onlineUsers.delete(userId);
+    prisma.user.update({ where: { user_id: userId }, data: { is_online: false } }).catch(console.error);
+  });
   // --- Chat join
   socket.on("chat:join", async ({ targetUserId }, ack) => {
     try {
@@ -127,20 +134,21 @@ io.on("connection", (socket) => {
     try {
       const chatIdNum = parseInt(chatId, 10);
       if (!chatIdNum || !content?.trim())
-        throw new Error("chatId ve content gerekli");
-
+        throw new Error("Geçerli bir chatId ve mesaj içeriği gerekli.");
+      //chat katılım kontrol
       const allowed = await isUserParticipantOfChat(userId, chatIdNum);
       if (!allowed)
         throw new Error("Bu sohbete mesaj gönderme yetkiniz yok");
-
+      
+      //mesaj kaydet
       const saved = await saveMessage({
         chatId: chatIdNum,
         senderId: userId,
         text: content.trim(),
       });
-
+      //tüm katılımcılara mesaj gönder
       io.to(`chat:${chatIdNum}`).emit("message:new", saved);
-
+    //karşı tarafı al
       const others = await getCounterpartIds(chatIdNum, userId);
 
       // Notify gönder
@@ -152,26 +160,38 @@ io.on("connection", (socket) => {
         });
       });
 
-      // Offline kullanıcı kontrolü
-      for (const otherId of others) {
-        try {
-          const user = await prisma.user.findUnique({
-            where: { user_id: otherId },
-            select: { is_online: true, name: true },
-          });
-          if (user && !user.is_online) {
-            socket.emit("system:info", {
-              type: "offline",
-              title: "Bilgilendirme",
-              message:
-                "Şu anda çevrimdışıyız, en kısa zamanda geri dönüş sağlanacaktır.",
-              toUserId: otherId,
-            });
-          }
-        } catch (err) {
-          console.error("Offline kontrolü sırasında hata:", err);
-        }
-      }
+     // --- Offline kontrol
+for (const otherId of others) {
+  if (onlineUsers.has(otherId)) continue;
+
+  const user = await prisma.user.findUnique({
+    where: { user_id: otherId },
+    select: { is_online: true, role: true, name: true },
+  });
+
+  if (user && !user.is_online) {
+    let title = "", messageText = "";
+
+    if (user.role === "support") {
+      title = "Destek Hattı Çevrimdışı";
+      messageText =
+        "Destek ekibimiz şu anda çevrimdışı. En kısa sürede size geri dönüş yapacağız. Anlayışınız için teşekkür ederiz.";
+    } else if (user.role === "hotel_owner") {
+      title = "Otel Sahibi Çevrimdışı";
+      messageText =
+        "Otel sahibi şu anda çevrimdışı. Mesajınızı aldık, uygun olduğunda size dönüş yapılacaktır.";
+    }
+
+    if (title && messageText) {
+      socket.emit("system:info", {
+        type: "offline",
+        title,
+        message: messageText,
+        toUserId: userId, // Mesajı atan kullanıcıya
+      });
+    }
+  }
+}
 
       ack?.({ ok: true, message: saved });
     } catch (err) {
