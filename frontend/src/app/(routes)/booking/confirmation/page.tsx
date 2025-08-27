@@ -8,7 +8,7 @@ import Link from "next/link";
 
 function ConfirmationPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Progress Bar */}
       <div className="w-full">
         <ProgressBar currentStep={3} />

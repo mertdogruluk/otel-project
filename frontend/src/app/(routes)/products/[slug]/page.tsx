@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Heart, Share2 } from "lucide-react";
+import { Heart, Home, Share2, Upload } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,6 +10,7 @@ import RezervasyonKarti from "@/components/booking/BookingSummary";
 import OzelliklerGrid from "@/components/hotel-card/FeaturesGrid";
 import OtelKarti from "@/components/hotel-card/HotelCard";
 import { otelVerisi } from "@/types/hotel";
+import { Button } from "@/components/ui/button";
 
 const otelGorselleri = [
   {
@@ -58,8 +59,8 @@ export default function OtelSayfasi() {
   };
 
   const handleShare = () => {
-    // Paylaşım işlevi burada implement edilecek
-    console.log("Paylaş butonuna tıklandı");
+    // Share functionality will be implemented here
+    console.log("Share button clicked");
   };
 
   return (
@@ -71,36 +72,41 @@ export default function OtelSayfasi() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/">Ana Sayfa</BreadcrumbLink>
+                  <BreadcrumbLink href="/">
+                 <div className="flex flex-row items-center gap-2">
+                 <Home className="w-4 h-4" />
+                 Ana Sayfa
+                 </div>
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/otel">Oteller</BreadcrumbLink>
+                  <BreadcrumbLink href="/products">Otel</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{otelVerisi.isim}</BreadcrumbPage>
+                  <BreadcrumbPage className="text-blue-600">{otelVerisi.isim}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
 
-            {/* Favori ve Paylaş Butonları */}
+            {/* Favorites and Share Buttons */}
             <div className="flex items-center space-x-6">
-              {/* Favori Butonu */}
-              <button
+              {/* Favorite Button */}
+              <Button
                 onClick={toggleFavorite}
-                className="w-10 h-10 rounded-lg border border-gray-300 hover:border-red-300 hover:bg-red-50 flex items-center justify-center transition-all duration-200"
+                className="w-10 h-10 bg-white hover:bg-white flex items-center justify-center cursor-pointer"
               >
                 <Heart className={`w-5 h-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-500'}`} fill={isFavorite ? 'currentColor' : 'none'} />
-              </button>
+                </Button>
 
-              {/* Paylaş Butonu */}
-              <button
-                onClick={handleShare}
-                className="w-10 h-10 rounded-lg border border-gray-300 hover:border-blue-300 hover:bg-blue-50 flex items-center justify-center transition-all duration-200"
+              {/* Share Button */}
+              <Button
+                onClick={toggleFavorite}
+                className="w-10 h-10 bg-white hover:bg-white flex items-center justify-center cursor-pointer"
               >
-                <Share2 className="w-5 h-5 text-gray-500" />
-              </button>
+                <Upload className="w-5 h-5 text-gray-500" />
+                </Button>
             </div>
           </div>
 

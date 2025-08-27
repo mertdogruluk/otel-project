@@ -20,7 +20,7 @@ function HotelConfirmationCard() {
   };
 
   return (
-    <Card className="w-full bg-gray-50 rounded-xl overflow-hidden shadow-sm border border-gray-100">
+    <Card className="w-full rounded-xl overflow-hidden shadow-sm border border-gray-100">
       <CardContent className="p-4">
         {/* Hotel Image */}
         <div className="relative w-full mb-6">
