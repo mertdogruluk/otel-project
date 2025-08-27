@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import Link from "next/link";
 
 function PaymentForm() {
   const [selectedPayment, setSelectedPayment] = useState("visa");
@@ -115,16 +116,20 @@ function PaymentForm() {
             <p className="font-bold font-opensans text-gray-800 mb-2">
               Özel İstek
             </p>
-            <Textarea placeholder="Özel İstek" className="p-6 h-48" />
+            <Textarea placeholder="Özel İstek" className="p-6 h-36" />
           </div>
           {/* Button Section */}
           <div className="flex flex-row gap-5 justify-end">
-            <Button className="bg-white border border-[#2F6FED] hover:bg-[#2F6FED] hover:text-white text-[#2F6FED] font-opensans font-bold p-5 rounded-lg cursor-pointer">
-              Geri
-            </Button>
-            <Button className="bg-[#2F6FED] hover:bg-[white] hover:text-[#2F6FED] hover:border-[#2F6FED] border-1 text-white font-opensans font-bold p-5 rounded-lg cursor-pointer">
-              Ödeme İşlemini Tamamla
-            </Button>
+            <Link href="/booking/info">
+              <Button className="bg-white border border-[#2F6FED] hover:bg-[#2F6FED] hover:text-white text-[#2F6FED] font-opensans font-bold p-5 rounded-lg cursor-pointer">
+                Geri
+              </Button>
+            </Link>
+            <Link href="/booking/confirmation">
+              <Button className="bg-[#2F6FED] hover:bg-[white] hover:text-[#2F6FED] hover:border-[#2F6FED] border-1 text-white font-opensans font-bold p-5 rounded-lg cursor-pointer">
+                Ödeme İşlemini Tamamla
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
