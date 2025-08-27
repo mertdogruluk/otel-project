@@ -21,6 +21,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import Link from "next/link";
 
 // Types for the component
 interface PersonCount {
@@ -665,10 +666,12 @@ function DatePicker() {
           </div>
 
           {/* Search Button */}
-          <Button className="bg-[#2F6FED] hover:bg-[#2F6FED]/80 text-white rounded-xl flex items-center justify-center gap-2 w-26 h-13 cursor-pointer">
-            <Search className="w-8 h-8" />
-            <span className="font-semibold">Ara</span>
-          </Button>
+          <Link href="/products">
+            <Button className="bg-[#2F6FED] hover:bg-[#2F6FED]/80 text-white rounded-xl flex items-center justify-center gap-2 w-26 h-13 cursor-pointer">
+              <Search className="w-8 h-8" />
+              <span className="font-semibold">Ara</span>
+            </Button>
+          </Link>
         </div>
       </CardHeader>
     </Card>

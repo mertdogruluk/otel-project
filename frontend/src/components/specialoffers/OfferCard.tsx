@@ -4,6 +4,7 @@ import { Star, MapPin, Heart, Eye, Coffee, Car } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { Badge } from "../ui/badge";
+import Link from "next/link";
 
 // Props interface for OfferCard
 interface OfferCardProps {
@@ -136,9 +137,11 @@ function OfferCard({
             <p className="text-sm text-gray-500">4 gece için</p>
             <p className="text-xl font-bold text-blue-600">{price}</p>
           </div>
-          <Button className="px-7 py-6 bg-[#2F6FED] hover:bg-[#2F6FED]/80 text-white rounded-xl transition-colors font-opensans font-bold text-sm cursor-pointer">
-            Detaylı İncele
-          </Button>
+          <Link href="/products/slug">
+            <Button className="px-7 py-6 bg-[#2F6FED] hover:bg-[#2F6FED]/80 text-white rounded-xl transition-colors font-opensans font-bold text-sm cursor-pointer">
+              Detaylı İncele
+            </Button>
+          </Link>
         </div>
       </CardContent>
     </Card>
