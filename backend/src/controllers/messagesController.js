@@ -76,7 +76,7 @@ export const sendMessage = async (req, res) => {
     return res.json({ ok: true, message });
   } catch (err) {
    
-    console.error("deleteMessage hatası:", err);
+    console.error("sendMessage hatası:", err);
     return res.status(500).json({ ok: false, error: "Mesaj silinirken bir hata oluştu. Lütfen daha sonra tekrar deneyin." });
   }  
 };

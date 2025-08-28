@@ -99,7 +99,8 @@ io.on("connection", (socket) => {
     .catch(console.error);
 
   socket.join(`notify:${userId}`);
-
+  
+  // --- Disconnect 
    socket.on("disconnect", () => {
     console.log(`❌ Disconnected: ${name} (${role}) #${userId}`);
     onlineUsers.delete(userId);
@@ -165,18 +166,18 @@ for (const otherId of others) {
   if (onlineUsers.has(otherId)) continue;
 
   const user = await prisma.user.findUnique({
-    where: { user_id: otherId },
+    where: { user_id: Number(otherId) },
     select: { is_online: true, role: true, name: true },
   });
 
   if (user && !user.is_online) {
     let title = "", messageText = "";
 
-    if (user.role === "support") {
+    if (user.role === "SUPPORT") {
       title = "Destek Hattı Çevrimdışı";
       messageText =
         "Destek ekibimiz şu anda çevrimdışı. En kısa sürede size geri dönüş yapacağız. Anlayışınız için teşekkür ederiz.";
-    } else if (user.role === "hotel_owner") {
+    } else if (user.role === "HOTEL_OWNER") {
       title = "Otel Sahibi Çevrimdışı";
       messageText =
         "Otel sahibi şu anda çevrimdışı. Mesajınızı aldık, uygun olduğunda size dönüş yapılacaktır.";
@@ -209,15 +210,7 @@ for (const otherId of others) {
       .emit("typing", { userId, typing: !!typing });
   });
 
-  // --- Disconnect
-  socket.on("disconnect", () => {
-    console.log(`❌ Disconnected: ${name} (${role}) #${userId}`);
-    prisma.user
-      .update({ where: { user_id: userId }, data: { is_online: false } })
-      .catch(console.error);
-  });
-});
-
+}); 
 const PORT = process.env.PORT || 3000;
 server
   .listen(PORT, () => {
