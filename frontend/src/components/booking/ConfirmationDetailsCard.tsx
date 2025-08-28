@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 function ConfirmationDetailsCard() {
   return (
-    <Card className="w-full bg-gray-50 rounded-lg overflow-hidden shadow-sm border border-gray-100">
+    <Card className="w-full rounded-lg overflow-hidden shadow-sm border border-gray-100">
       <CardContent className="p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
           {/* Reservation Details */}

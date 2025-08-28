@@ -1,7 +1,7 @@
 import HotelFilters from "@/components/filters/HotelFilters";
 import Pagination from "@/components/filters/Pagination";
 import DatePicker from "@/components/forms/DatePicker";
-import HotelsList from "@/components/hotels/HotelsList";
+import HotelsList from "@/components/products-page/HotelsList";
 import Image from "next/image";
 import React from "react";
 

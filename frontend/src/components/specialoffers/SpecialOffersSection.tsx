@@ -1,100 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, MoveUpRight } from "lucide-react";
-import OfferCard from "./OfferCard";
+import { ArrowUpRight } from "lucide-react";
+import HotelCard from "./HotelCard";
+import { mockHotels } from "@/data/hotels";
 
-// Sample data for special offers
-const specialOffersData = [
-  {
-    id: 1,
-    image: "/images/riad-deluxe-hotel-img-1.png",
-    title: "Riad Deluxe Hotel",
-    location: "Marakeş, Fas",
-    price: "40.000 TL",
-    rating: 4.7,
-    reviews: 120,
-    tag: "%20 indirim",
-    amenities: ["Ücretsiz iptal", "Kahvaltı dahil", "Otopark"],
-  },
-  {
-    id: 2,
-    image: "/images/riad-deluxe-hotel-img-2.png",
-    title: "Riad Deluxe Hotel",
-    location: "Marakeş, Fas",
-    price: "40.000 TL",
-    rating: 4.7,
-    reviews: 120,
-    tag: null,
-    amenities: ["Ücretsiz iptal", "Kahvaltı dahil", "Otopark"],
-  },
-  {
-    id: 3,
-    image: "/images/riad-deluxe-hotel-img-3.png",
-    title: "Riad Deluxe Hotel",
-    location: "Marakeş, Fas",
-    price: "40.000 TL",
-    rating: 4.7,
-    reviews: 120,
-    tag: null,
-    amenities: ["Ücretsiz iptal", "Kahvaltı dahil", "Otopark"],
-  },
-  {
-    id: 4,
-    image: "/images/riad-deluxe-hotel-img-4.png",
-    title: "Riad Deluxe Hotel",
-    location: "Marakeş, Fas",
-    price: "40.000 TL",
-    rating: 4.7,
-    reviews: 120,
-    tag: "%20 indirim",
-    amenities: ["Ücretsiz iptal", "Kahvaltı dahil", "Otopark"],
-  },
-  {
-    id: 5,
-    image: "/images/riad-deluxe-hotel-img-5.png",
-    title: "Riad Deluxe Hotel",
-    location: "Marakeş, Fas",
-    price: "40.000 TL",
-    rating: 4.7,
-    reviews: 120,
-    tag: "%20 indirim",
-    amenities: ["Ücretsiz iptal", "Kahvaltı dahil", "Otopark"],
-  },
-  {
-    id: 6,
-    image: "/images/riad-deluxe-hotel-img-6.png",
-    title: "Riad Deluxe Hotel",
-    location: "Marakeş, Fas",
-    price: "40.000 TL",
-    rating: 4.7,
-    reviews: 120,
-    tag: "%20 indirim",
-    amenities: ["Ücretsiz iptal", "Kahvaltı dahil", "Otopark"],
-  },
-  {
-    id: 7,
-    image: "/images/riad-deluxe-hotel-img-7.png",
-    title: "Riad Deluxe Hotel",
-    location: "Marakeş, Fas",
-    price: "40.000 TL",
-    rating: 4.7,
-    reviews: 120,
-    tag: "%20 indirim",
-    amenities: ["Ücretsiz iptal", "Kahvaltı dahil", "Otopark"],
-  },
-  {
-    id: 8,
-    image: "/images/riad-deluxe-hotel-img-8.png",
-    title: "Riad Deluxe Hotel",
-    location: "Marakeş, Fas",
-    price: "40.000 TL",
-    rating: 4.7,
-    reviews: 120,
-    tag: null,
-    amenities: ["Ücretsiz iptal", "Kahvaltı dahil", "Otopark"],
-  },
-];
+// Use centralized hotel data
+const specialOffersData = mockHotels;
 
 function SpecialOffersSection() {
   const [activeFilter, setActiveFilter] = useState("Otel");
@@ -145,7 +57,7 @@ function SpecialOffersSection() {
       {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {specialOffersData.map((offer) => (
-          <OfferCard
+          <HotelCard
             key={offer.id}
             image={offer.image}
             title={offer.title}
