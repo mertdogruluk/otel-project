@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const bilgilerFormSchema = z.object({
+export const infoFormSchema = z.object({
   ad: z.string().min(2, "Ad en az 2 karakter olmalıdır"),
   soyad: z.string().min(2, "Soyad en az 2 karakter olmalıdır"),
   email: z.string().email("Geçerli bir e-posta adresi giriniz"),
@@ -9,5 +9,4 @@ export const bilgilerFormSchema = z.object({
   ozelIstek: z.string().optional(),
 });
 
-export type BilgilerFormData = z.infer<typeof bilgilerFormSchema>;
-
+export type InfoFormData = z.infer<typeof infoFormSchema>;
