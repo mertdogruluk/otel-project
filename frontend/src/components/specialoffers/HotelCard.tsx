@@ -6,19 +6,10 @@ import { Card, CardContent, CardHeader } from "../ui/card";
 import { Badge } from "../ui/badge";
 import Link from "next/link";
 
-// Props interface for OfferCard
-interface OfferCardProps {
-  image: string;
-  title: string;
-  location: string;
-  price: string;
-  rating: number;
-  reviews: number;
-  tag: string | null;
-  amenities: string[];
-}
+// Import types from centralized location
+import { HotelCardProps } from '@/types/hotel';
 
-function OfferCard({
+function HotelCard({
   image,
   title,
   location,
@@ -27,7 +18,7 @@ function OfferCard({
   reviews,
   tag,
   amenities,
-}: OfferCardProps) {
+}: HotelCardProps) {
   // State for favorite status
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -148,4 +139,4 @@ function OfferCard({
   );
 }
 
-export default OfferCard;
+export default HotelCard;

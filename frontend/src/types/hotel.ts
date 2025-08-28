@@ -1,72 +1,83 @@
-export interface OtelOzellik {
-  id: number;
-  icon: string;
-  text: string;
-  value?: string;
-}
+// Hotel data interfaces for centralized data management
 
-export interface OtelData {
+// Amenity interface with icon information
+export interface Amenity {
   id: string;
-  isim: string;
-  konum: string;
-  puan: number;
-  yorumSayisi: number;
-  fiyat: number;
-  paraBirimi: string;
-  geceSayisi: number;
-  girisTarihi: string;
-  cikisTarihi: string;
-  kisiSayisi: number;
-  ozellikler: OtelOzellik[];
+  name: string;
+  icon: string; // Icon name or path
+  description?: string;
 }
 
-export const otelVerisi: OtelData = {
-  id: "1",
-  isim: "Riad Deluxe Hotel",
-  konum: "Marakeş, Fas",
-  puan: 4.7,
-  yorumSayisi: 120,
-  fiyat: 40500,
-  paraBirimi: "TL",
-  geceSayisi: 4,
-  girisTarihi: "18/07/2025",
-  cikisTarihi: "22/07/2025",
-  kisiSayisi: 1,
-  ozellikler: [
-    {
-      id: 1,
-      icon: "🛏️",
-      text: "Çift Kişilik Yatak",
-      value: "2"
-    },
-    {
-      id: 2,
-      icon: "🛋️",
-      text: "Oturma alanı",
-      value: "1"
-    },
-    {
-      id: 3,
-      icon: "🛁",
-      text: "Banyo",
-      value: "2"
-    },
-    {
-      id: 4,
-      icon: "🧊",
-      text: "Minibar",
-      value: "1"
-    },
-    {
-      id: 5,
-      icon: "📶",
-      text: "Wi Fi"
-    },
-    {
-      id: 6,
-      icon: "📺",
-      text: "Televizyon",
-      value: "1"
-    }
-  ]
-};
+// Hotel data interface based on HotelCardProps
+export interface HotelData {
+  id: number;
+  image: string;
+  title: string;
+  location: string;
+  price: string;
+  rating: number;
+  reviews: number;
+  tag: string | null;
+  amenities: string[];
+  // Additional fields for future API integration
+  description?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  checkIn?: string;
+  checkOut?: string;
+  policies?: string[];
+  images?: string[];
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
+  category?: 'hotel' | 'villa' | 'apartment' | 'room';
+  stars?: number;
+  facilities?: string[];
+  roomTypes?: {
+    id: number;
+    name: string;
+    capacity: number;
+    price: number;
+    available: boolean;
+  }[];
+}
+
+// Hotel card props interface (for component usage)
+export interface HotelCardProps {
+  image: string;
+  title: string;
+  location: string;
+  price: string;
+  rating: number;
+  reviews: number;
+  tag: string | null;
+  amenities: string[];
+}
+
+// Hotel filter interface for search and filtering
+export interface HotelFilters {
+  location?: string;
+  checkIn?: string;
+  checkOut?: string;
+  guests?: number;
+  rooms?: number;
+  priceRange?: {
+    min: number;
+    max: number;
+  };
+  rating?: number;
+  amenities?: string[];
+  category?: string[];
+}
+
+// Hotel search result interface
+export interface HotelSearchResult {
+  hotels: HotelData[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  filters: HotelFilters;
+}
