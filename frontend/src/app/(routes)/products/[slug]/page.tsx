@@ -13,40 +13,6 @@ import { HotelData } from "@/types/hotel";
 // In a real app, this would come from the URL slug parameter
 const currentHotel: HotelData = mockHotels[0];
 
-// Convert hotel images to carousel format
-const hotelImages = currentHotel.images?.map((image, index) => ({
-  id: index + 1,
-  src: image,
-  alt: `${currentHotel.title} - ${index + 1}. görsel`,
-})) || [
-  // Fallback images if hotel.images is not available
-  {
-    id: 1,
-    src: "/images/hotel-page-1.jpg",
-    alt: "Lüks otel havuzu ve mimari",
-  },
-  {
-    id: 2,
-    src: "/images/hotel-page-2.jpg",
-    alt: "Otel iç avlu ve havuz",
-  },
-  {
-    id: 3,
-    src: "/images/hotel-page-3.jpg",
-    alt: "Otel duvar dekorasyonu",
-  },
-  {
-    id: 4,
-    src: "/images/hotel-page-4.jpg",
-    alt: "Otel havuz detayı",
-  },
-  {
-    id: 5,
-    src: "/images/hotel-page-5.jpg",
-    alt: "Otel genel görünüm",
-  },
-];
-
 function ProductDetailPage() {
   return (
     <div className="px-24">
@@ -59,7 +25,7 @@ function ProductDetailPage() {
       <div className="flex flex-row gap-20 mb-10 items-start">
         {/* Left: Carousel - limited width */}
         <div className="flex-1 max-w-[960px]">
-          <ProductImageCarousel images={hotelImages} />
+          <ProductImageCarousel images={currentHotel.images} />
         </div>
         {/* Right: Booking card on top, features below - fixed width */}
         <div className="flex flex-col gap-8 w-[460px] flex-shrink-0">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
@@ -12,14 +12,8 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 
-interface ImageData {
-  id: number;
-  src: string;
-  alt: string;
-}
-
 interface ProductImageCarouselProps {
-  images: ImageData[];
+  images?: string[];
   className?: string;
 }
 
@@ -29,16 +23,61 @@ export default function ProductImageCarousel({
 }: ProductImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Prepare fallback images and normalize to exactly 20
+  const finalImages = useMemo(() => {
+    const fallbackImages = [
+      { src: "/images/hotel-page-1.jpg", alt: "Lüks otel havuzu ve mimari" },
+      { src: "/images/hotel-page-2.jpg", alt: "Otel iç avlu ve havuz" },
+      { src: "/images/hotel-page-3.jpg", alt: "Otel duvar dekorasyonu" },
+      { src: "/images/hotel-page-4.jpg", alt: "Otel havuz detayı" },
+      { src: "/images/hotel-page-5.jpg", alt: "Otel genel görünüm" },
+      { src: "/images/hotel-page-1.jpg", alt: "Otel bahçe alanı" },
+      { src: "/images/hotel-page-2.jpg", alt: "Otel lounge alanı" },
+      { src: "/images/hotel-page-3.jpg", alt: "Otel spa merkezi" },
+      { src: "/images/hotel-page-4.jpg", alt: "Otel fitness salonu" },
+      { src: "/images/hotel-page-5.jpg", alt: "Otel restoran alanı" },
+      { src: "/images/hotel-page-1.jpg", alt: "Otel bar alanı" },
+      { src: "/images/hotel-page-2.jpg", alt: "Otel konferans salonu" },
+      { src: "/images/hotel-page-3.jpg", alt: "Otel çocuk oyun alanı" },
+      { src: "/images/hotel-page-4.jpg", alt: "Otel teras alanı" },
+      { src: "/images/hotel-page-5.jpg", alt: "Otel jakuzi alanı" },
+      { src: "/images/hotel-page-1.jpg", alt: "Otel sauna alanı" },
+      { src: "/images/hotel-page-2.jpg", alt: "Otel kütüphane alanı" },
+      { src: "/images/hotel-page-3.jpg", alt: "Otel oyun salonu" },
+      { src: "/images/hotel-page-4.jpg", alt: "Otel güneşlenme alanı" },
+      { src: "/images/hotel-page-5.jpg", alt: "Otel gece görünümü" },
+    ];
+
+    const mapped = (images || []).map((src, index) => ({
+      id: index + 1,
+      src,
+      alt: `Görsel ${index + 1}`,
+    }));
+
+    const base = mapped.length > 0 ? mapped : fallbackImages.map((f, i) => ({ id: i + 1, ...f }));
+    const desired = 20;
+    if (base.length === desired) return base;
+    if (base.length > desired) return base.slice(0, desired);
+    const result = [...base];
+    let fillerIndex = 0;
+    while (result.length < desired) {
+      const f = fallbackImages[fillerIndex % fallbackImages.length];
+      result.push({ id: result.length + 1, src: f.src, alt: `Görsel ${result.length + 1}` });
+      fillerIndex += 1;
+    }
+    return result;
+  }, [images]);
+
   const handleThumbnailClick = (index: number) => {
     setCurrentIndex(index);
   };
 
   const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    setCurrentIndex((prev) => (prev === 0 ? finalImages.length - 1 : prev - 1));
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    setCurrentIndex((prev) => (prev === finalImages.length - 1 ? 0 : prev + 1));
   };
 
   return (
@@ -47,8 +86,8 @@ export default function ProductImageCarousel({
       <div className="relative mb-6">
         <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-100 shadow-xl">
           <Image
-            src={images[currentIndex]?.src}
-            alt={images[currentIndex]?.alt}
+            src={finalImages[currentIndex]?.src}
+            alt={finalImages[currentIndex]?.alt}
             fill
             className="object-cover transition-all duration-500"
             priority
@@ -71,7 +110,7 @@ export default function ProductImageCarousel({
 
           {/* Image Counter */}
           <div className="absolute bottom-4 right-4 bg-black/70 text-white px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
-            {currentIndex + 1} / {images.length}
+            {currentIndex + 1} / {finalImages.length}
           </div>
         </div>
       </div>
@@ -87,7 +126,7 @@ export default function ProductImageCarousel({
           className="w-full max-w-full"
         >
           <CarouselContent className="-ml-2 py-2">
-            {images.map((image, index) => (
+            {finalImages.map((image, index) => (
               <CarouselItem key={image.id} className="pl-2 basis-1/5 sm:basis-1/6 md:basis-1/7 lg:basis-1/8 xl:basis-1/10">
                 <button
                   onClick={() => handleThumbnailClick(index)}
