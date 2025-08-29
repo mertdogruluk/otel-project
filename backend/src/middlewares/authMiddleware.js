@@ -80,6 +80,36 @@ const authenticateToken = async (req, res, next) => {
 };
 
 /**
+ * Opsiyonel JWT doğrulama middleware'i
+ * Authorization header yoksa sessizce devam eder, varsa doğrular.
+ */
+const authenticateTokenOptional = async (req, res, next) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) return next();
+
+    const token = authHeader.split(' ')[1];
+    if (!token) return next();
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.user_id;
+
+    const user = await prisma.user.findUnique({
+      where: { user_id: userId },
+      select: { user_id: true, email: true, name: true, role: true, created_at: true }
+    });
+
+    if (user) {
+      req.user = user;
+    }
+    return next();
+  } catch (_) {
+    // Opsiyonel olduğu için hatayı yükseltmeyip devam ediyoruz
+    return next();
+  }
+};
+
+/**
  * Belirli roller için yetkilendirme middleware'i
  * @param {string[]} allowedRoles - Prisma enum değerleri: CUSTOMER, HOTEL_OWNER, SUPPORT
  */
@@ -117,7 +147,7 @@ const authorizeOwnResource = (resourceUserId, allowSupport = true) => {
     }
 
     // Normal kullanıcılar sadece kendi verilerine erişebilir
-    if (req.user.user_id !== resourceUserId) {
+    if (Number(req.user.user_id) !== Number(resourceUserId)) {
       return res.status(403).json({
         success: false,
         message: 'Bu kaynağa erişim yetkiniz bulunmamaktadır.'
@@ -128,4 +158,4 @@ const authorizeOwnResource = (resourceUserId, allowSupport = true) => {
   };
 };
 
-export { authenticateToken, authorizeRoles, authorizeOwnResource };
+export { authenticateToken, authenticateTokenOptional, authorizeRoles, authorizeOwnResource };
