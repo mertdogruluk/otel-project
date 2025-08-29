@@ -1,28 +1,29 @@
 import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
 import Image from "next/image";
+import Pagination from "../filters/Pagination";
 
 function ProductTabs() {
   return (
     <>
-      {/* Tab Yapısı */}
-      <Tabs defaultValue="aciklama" className="w-full">
+      {/* Tab Section */}
+      <Tabs defaultValue="description" className="w-full">
         <div className="border-b border-gray-200 mb-8">
           <TabsList className="grid w-full grid-cols-3 bg-transparent border-0 p-0 h-auto">
             <TabsTrigger
-              value="aciklama"
+              value="description"
               className="data-[state=active]:bg-transparent data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none bg-transparent border-0 rounded-none py-3 text-gray-600 hover:text-gray-800 transition-colors"
             >
               Açıklama
             </TabsTrigger>
             <TabsTrigger
-              value="degerlendirme"
+              value="reviews"
               className="data-[state=active]:bg-transparent data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none bg-transparent border-0 rounded-none py-3 text-gray-600 hover:text-gray-800 transition-colors"
             >
               Değerlendirme
             </TabsTrigger>
             <TabsTrigger
-              value="harita"
+              value="map"
               className="data-[state=active]:bg-transparent data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none bg-transparent border-0 rounded-none py-3 text-gray-600 hover:text-gray-800 transition-colors"
             >
               Harita
@@ -30,31 +31,30 @@ function ProductTabs() {
           </TabsList>
         </div>
 
-        <TabsContent value="aciklama" className="space-y-6">
+        <TabsContent value="description" className="space-y-6">
           <div className="prose max-w-none">
-            <p className="text-gray-700 leading-relaxed mb-4">
-              Riad Deluxe, geleneksel Fas mimarisini modern konforla birleştiren
-              lüks bir konaklama seçeneğidir. Fas kültürünü ve geleneklerini
-              keşfetmek isteyen gezginler için ideal olan bu otel,
-              Medina&apos;nın tarihi sokaklarından dakikalar uzaklıkta yer
-              almaktadır.
-            </p>
-
             <p className="text-gray-700 leading-relaxed mb-6">
-              Zarif iç mekanlar, geleneksel Fas dokuma halıları, el yapımı
-              seramikler ve renkli cam işçiliği ile dekore edilmiş odalar, sıcak
-              bir atmosfer yaratır. Otantik riad mimarisi ile huzurlu bir
-              kaçamak için mükemmel bir seçimdir.
+              Marakeş&apos;in kalbinde yer alan Riad Deluxe, geleneksel Fas
+              mimarisinin zarif dokunuşlarıyla modern konforu buluşturan lüks
+              bir konaklama deneyimi sunuyor. Medina&apos;nın tarihi sokaklarına
+              sadece birkaç dakika mesafede bulunan bu büyüleyici riad, Fas
+              kültürünü ve geleneklerini keşfetmek isteyen gezginler için ideal
+              bir mekan. Zarif iç mekanları, geleneksel Fas dokuma halıları, el
+              yapımı seramikler ve renkli cam işçilikleri ile sizi sıcak bir
+              atmosferde ağırlıyor. Otelimiz, otantik bir Fas evi olan riad
+              mimarisiyle, huzurlu bir kaçamak için mükemmel bir seçimdir.
             </p>
 
             <h3 className="text-lg font-semibold text-gray-800 mb-3">
               Odalar ve Süitler:
             </h3>
             <p className="text-gray-700 leading-relaxed mb-3">
-              Odalarımız geniş, konforlu ve benzersiz tasarıma sahiptir. Klasik
-              Fas dekoru, özel mobilyalar, yüksek kaliteli yataklar ve özel
-              banyolar sunuyoruz. Modern olanaklar arasında ücretsiz Wi-Fi,
-              klima, minibar ve LCD TV bulunmaktadır.
+              Riad Deluxe, özenle tasarlanmış geniş ve konforlu odaları ile
+              misafirlerine benzersiz bir konaklama deneyimi sunuyor. Her odada
+              klasik Fas tarzı dekorasyon, özel mobilyalar, yüksek kaliteli
+              yataklar ve özel banyolar bulunmaktadır. Ayrıca, tüm odalarımızda
+              ücretsiz Wi-Fi, klima, minibar ve LCD TV gibi modern olanaklar da
+              mevcuttur.
             </p>
             <ul className="list-disc list-inside space-y-2 text-gray-700 mb-6">
               <li>
@@ -107,19 +107,11 @@ function ProductTabs() {
           </div>
         </TabsContent>
 
-        <TabsContent value="degerlendirme" className="space-y-6">
+        <TabsContent value="reviews" className="space-y-6">
           <div className="prose max-w-none">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Misafir Değerlendirmeleri
-            </h3>
-            <p className="text-gray-700 leading-relaxed mb-6">
-              Misafirlerimizin deneyimleri ve değerlendirmeleri aşağıda yer
-              almaktadır.
-            </p>
-
-            {/* Yorum Kartları */}
+            {/* Description Cards */}
             <div className="space-y-6">
-              {/* John Doe Yorumu */}
+              {/* John Doe Review */}
               <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
@@ -159,7 +151,7 @@ function ProductTabs() {
                 <p className="text-gray-500 text-sm">Published 2 weeks ago</p>
               </div>
 
-              {/* Jane Smith Yorumu */}
+              {/* Jane Smith Review */}
               <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
@@ -195,7 +187,7 @@ function ProductTabs() {
                   laboris nisi ut aliquip ex ea commodo consequat.
                 </p>
 
-                {/* Yorum Görselleri */}
+                {/* Review Images */}
                 <div className="flex gap-3 mb-4">
                   <div className="w-32 h-24 rounded-lg overflow-hidden">
                     <Image
@@ -216,14 +208,22 @@ function ProductTabs() {
                     />
                   </div>
                 </div>
-
                 <p className="text-gray-500 text-sm">Published 1 month ago</p>
               </div>
+            </div>
+
+            {/* Pagination */}
+            <div className="flex justify-end mt-8">
+              <Pagination
+                totalPages={8}
+                currentPage={1}
+                onPageChange={(page) => console.log(`Page changed to: ${page}`)}
+              />
             </div>
           </div>
         </TabsContent>
 
-        <TabsContent value="harita" className="space-y-6">
+        <TabsContent value="map" className="space-y-6">
           <div className="prose max-w-none">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Harita</h3>
             <p className="text-gray-700 leading-relaxed">

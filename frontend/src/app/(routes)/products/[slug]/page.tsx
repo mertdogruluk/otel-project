@@ -20,7 +20,7 @@ function ProductDetailPage() {
       <div className="my-8">
         <ProductHeader hotel={currentHotel} />
       </div>
-      
+
       {/* Hotel Detail Section */}
       <div className="flex flex-row gap-20 mb-10 items-start">
         {/* Left: Carousel - limited width */}
@@ -38,9 +38,9 @@ function ProductDetailPage() {
       <div className="my-8 max-w-[960px]">
         <ProductTabs />
       </div>
-      
-      {/* En Son Bakılan Hotel Section */}
-      <div className="mb-8 ">
+
+      {/* Recently Viewed Hotels Section */}
+      <div className="mb-28 ">
         <h3 className="text-2xl font-bold font-opensans text-gray-900 mb-6">
           Benzer Oteller
         </h3>
