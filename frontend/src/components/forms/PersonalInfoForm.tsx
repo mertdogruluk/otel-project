@@ -37,8 +37,11 @@ function PersonalInfoForm() {
   return (
     <div className="flex flex-col gap-7">
       <h4 className="text-base font-bold font-opensans">Kişisel Bilgiler</h4>
-      
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 max-w-2xl">
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-6 max-w-2xl"
+      >
         {/* Name and Surname */}
         <div className="flex flex-row gap-6">
           <div className="flex-1">
@@ -62,7 +65,9 @@ function PersonalInfoForm() {
               className={`p-6 h-12 ${errors.soyad ? "border-red-500" : ""}`}
             />
             {errors.soyad && (
-              <p className="text-sm text-red-500 mt-1">{errors.soyad.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.soyad.message}
+              </p>
             )}
           </div>
         </div>
@@ -95,7 +100,9 @@ function PersonalInfoForm() {
             className={`p-6 h-12 ${errors.ulkeBolge ? "border-red-500" : ""}`}
           />
           {errors.ulkeBolge && (
-            <p className="text-sm text-red-500 mt-1">{errors.ulkeBolge.message}</p>
+            <p className="text-sm text-red-500 mt-1">
+              {errors.ulkeBolge.message}
+            </p>
           )}
         </div>
 
@@ -111,7 +118,9 @@ function PersonalInfoForm() {
             className={`p-6 h-12 ${errors.telefon ? "border-red-500" : ""}`}
           />
           {errors.telefon && (
-            <p className="text-sm text-red-500 mt-1">{errors.telefon.message}</p>
+            <p className="text-sm text-red-500 mt-1">
+              {errors.telefon.message}
+            </p>
           )}
         </div>
 
@@ -134,7 +143,7 @@ function PersonalInfoForm() {
               Geri
             </Button>
           </Link>
-          <Button 
+          <Button
             type="submit"
             disabled={isSubmitting}
             className="bg-[#2F6FED] hover:bg-[white] hover:text-[#2F6FED] hover:border-[#2F6FED] border-1 text-white font-opensans font-bold p-5 rounded-lg cursor-pointer"
