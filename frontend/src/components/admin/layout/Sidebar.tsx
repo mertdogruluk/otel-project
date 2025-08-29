@@ -8,15 +8,16 @@ import {
   ShoppingCart, 
   Users, 
   MapPin, 
-  Settings, 
+ 
   Database,
   ChevronDown,
   Menu,
   X,
   Layers,
-  UserCheck,
+
   BarChart3,
-  FileText
+  FileText,
+  ImageIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -37,8 +38,6 @@ const menuItems: MenuItem[] = [
     hasDropdown: true,
     children: [
       { id: 'home', title: 'Home', icon: LayoutDashboard, href: '/dashboard' },
-      { id: 'analytics', title: 'Analytics', icon: BarChart3, href: 'javascript:void(0)' },
-      { id: 'overview', title: 'Overview', icon: LayoutDashboard, href: 'javascript:void(0)' },
     ]
   }
 ];
@@ -61,8 +60,8 @@ const allPageItems: MenuItem[] = [
     icon: Layers,
     hasDropdown: true,
     children: [
-      { id: 'all-categories', title: 'All Categories', icon: Layers, href: 'javascript:void(0)' },
-      { id: 'add-category', title: 'Add Category', icon: Layers, href: 'javascript:void(0)' },
+      { id: 'category-list', title: 'Category List', icon: Layers, href: '/categories/list' },
+      { id: 'new-category', title: 'New Category', icon: Layers, href: '/categories/new' },
     ]
   },
   {
@@ -81,71 +80,35 @@ const allPageItems: MenuItem[] = [
     icon: FileText,
     hasDropdown: true,
     children: [
-      { id: 'all-orders', title: 'All Orders', icon: FileText, href: 'javascript:void(0)' },
-      { id: 'pending-orders', title: 'Pending Orders', icon: FileText, href: 'javascript:void(0)' },
-      { id: 'completed-orders', title: 'Completed Orders', icon: FileText, href: 'javascript:void(0)' },
+      { id: 'order-list', title: 'Order List', icon: FileText, href: '/order/all' },
+      { id: 'order-detail', title: 'Order Detail', icon: FileText, href: '/order/detail' },
     ]
   },
   {
     id: 'user',
-    title: 'User',
+    title: 'Add User',
     icon: Users,
-    hasDropdown: true,
-    children: [
-      { id: 'all-users', title: 'All Users', icon: Users, href: 'javascript:void(0)' },
-      { id: 'add-user', title: 'Add User', icon: Users, href: 'javascript:void(0)' },
-    ]
+    href: '/users'
   },
-  {
-    id: 'roles',
-    title: 'Roles',
-    icon: UserCheck,
-    hasDropdown: true,
-    children: [
-      { id: 'all-roles', title: 'All Roles', icon: UserCheck, href: 'javascript:void(0)' },
-      { id: 'add-role', title: 'Add Role', icon: UserCheck, href: 'javascript:void(0)' },
-    ]
-  },
+
   {
     id: 'gallery',
     title: 'Gallery',
-    icon: Image,
-    href: 'javascript:void(0)'
+    icon: ImageIcon,
+    href: '/gallery'
   },
-  {
-    id: 'report',
-    title: 'Report',
-    icon: BarChart3,
-    href: 'javascript:void(0)'
-  }
+
 ];
 
 const settingItems: MenuItem[] = [
-  {
-    id: 'location',
-    title: 'Location',
-    icon: MapPin,
-    hasDropdown: true,
-    children: [
-      { id: 'countries', title: 'Countries', icon: MapPin, href: 'javascript:void(0)' },
-      { id: 'states', title: 'States', icon: MapPin, href: 'javascript:void(0)' },
-      { id: 'cities', title: 'Cities', icon: MapPin, href: 'javascript:void(0)' },
-    ]
-  },
-  {
-    id: 'setting',
-    title: 'Setting',
-    icon: Settings,
-    href: 'javascript:void(0)'
-  },
   {
     id: 'pages',
     title: 'Pages',
     icon: FileText,
     hasDropdown: true,
     children: [
-      { id: 'all-pages', title: 'All Pages', icon: FileText, href: 'javascript:void(0)' },
-      { id: 'add-page', title: 'Add Page', icon: FileText, href: 'javascript:void(0)' },
+      { id: 'list-page', title: 'List Page', icon: FileText, href: '/pages/list' },
+      { id: 'new-page', title: 'New Page', icon: FileText, href: '/pages/new' },
     ]
   }
 ];
