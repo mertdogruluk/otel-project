@@ -31,17 +31,24 @@ function ProductHeader({ hotel }: ProductHeaderProps) {
               <BreadcrumbLink href="/">
                 <div className="flex flex-row items-center gap-2">
                   <Home className="w-4 h-4" />
-                  Ana Sayfa
+                  <span className="text-base font-opensans text-gray-600">
+                    Ana Sayfa
+                  </span>
                 </div>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/products">Otel</BreadcrumbLink>
+              <BreadcrumbLink
+                href="/products"
+                className="text-base font-opensans text-gray-600"
+              >
+                Otel
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-blue-600">
+              <BreadcrumbPage className="text-base font-opensans text-blue-600">
                 {hotel?.title || "Otel Detayı"}
               </BreadcrumbPage>
             </BreadcrumbItem>
