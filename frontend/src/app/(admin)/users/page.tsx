@@ -1,21 +1,36 @@
-import React from 'react';
+'use client';
 
-export default function UsersPage() {
+import React from 'react';
+import Link from 'next/link';
+import { AddUserForm } from '@/components/admin/users';
+import { UserFormData } from '@/lib/schemas';
+
+export default function AddUserPage() {
+  const handleUserSubmit = async (data: UserFormData) => {
+    // TODO: API çağrısı yapılacak
+    console.log('Kullanıcı oluşturuluyor:', data);
+    
+    // Simüle edilmiş API çağrısı
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    alert('Kullanıcı başarıyla oluşturuldu!');
+  };
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Users</h1>
-        <p className="text-muted-foreground">
-          Manage users and permissions.
-        </p>
+    <div className="min-h-screen bg-gray-50 p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center text-sm text-gray-500 mb-4">
+          <Link href="/dashboard" className="hover:text-gray-700">Dashboard</Link>
+          <span className="mx-2">›</span>
+          <Link href="/users" className="hover:text-gray-700">User</Link>
+          <span className="mx-2">›</span>
+          <span className="text-gray-900">Add New User</span>
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900">Add New User</h1>
       </div>
       
-      <div className="rounded-lg border p-8 text-center">
-        <h2 className="text-xl font-semibold mb-2">Coming Soon</h2>
-        <p className="text-muted-foreground">
-          User management features will be available here.
-        </p>
-      </div>
+      <AddUserForm onSubmit={handleUserSubmit} />
     </div>
   );
 }
