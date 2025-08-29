@@ -10,3 +10,15 @@ export const infoFormSchema = z.object({
 });
 
 export type InfoFormData = z.infer<typeof infoFormSchema>;
+
+export const paymentFormSchema = z.object({
+  cardNumber: z.string().min(16, "Kart numarası 16 haneli olmalıdır").max(19, "Kart numarası çok uzun"),
+  expiryDate: z.string().regex(/^(0[1-9]|1[0-2])\/([0-9]{2})$/, "Geçerli bir son kullanma tarihi giriniz (AA/YY)"),
+  cvv: z.string().min(3, "CVV 3 haneli olmalıdır").max(4, "CVV 4 haneli olmalıdır"),
+  address: z.string().min(10, "Adres en az 10 karakter olmalıdır"),
+  country: z.string().min(2, "Ülke/Bölge en az 2 karakter olmalıdır"),
+  phone: z.string().min(10, "Geçerli bir telefon numarası giriniz"),
+  specialRequest: z.string().optional(),
+});
+
+export type PaymentFormData = z.infer<typeof paymentFormSchema>;
