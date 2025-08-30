@@ -56,6 +56,9 @@ model Hotel {
   reservations Reservation[] @relation("HotelReservations")
   images       Image[]
   created_at   DateTime @default(now())
+
+  main_image_url  String?
+  main_image_path String?
 }
 
 model Room {
@@ -93,6 +96,7 @@ model Image {
   hotel_id   Int
   hotel      Hotel    @relation(fields: [hotel_id], references: [hotel_id])
   url        String
+  storage_path String
   created_at DateTime @default(now())
 }
 

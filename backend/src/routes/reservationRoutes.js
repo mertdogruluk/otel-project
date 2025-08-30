@@ -6,7 +6,7 @@ import { authenticateToken } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 /**
- * 🔹 Rezervasyonları listele
+ * Rezervasyonları listele
  * SUPPORT → tüm rezervasyonlar
  * HOTEL_OWNER → sadece kendi otellerinin rezervasyonları
  * CUSTOMER → sadece kendi rezervasyonları
@@ -57,7 +57,7 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 
 /**
- * 🔹 Yeni rezervasyon oluştur
+ * Yeni rezervasyon oluştur
  * quantity dikkate alınıyor → aynı odadan en fazla quantity kadar rezervasyon yapılabilir
  */
 router.post("/", authenticateToken, async (req, res) => {
@@ -121,7 +121,7 @@ router.post("/", authenticateToken, async (req, res) => {
 });
 
 /**
- * 🔹 Rezervasyon durum güncelle
+ * Rezervasyon durum güncelle
  * - CUSTOMER kendi rezervasyonunu CANCEL edebilir
  * - HOTEL_OWNER kendi otelindeki rezervasyonu CONFIRM / CANCEL edebilir
  * - SUPPORT her şeyi güncelleyebilir

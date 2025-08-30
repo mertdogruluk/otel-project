@@ -9,8 +9,7 @@ import {
 const router = express.Router();
 
 /**
- * 🔹 Şehir listesi (otel olan şehirler)
- * NOTE: Bunu /:id’den önce tanımlamalıyız yoksa çakışır
+ * Şehir listesi (otel olan şehirler)
  */
 router.get("/cities/list", async (_req, res) => {
   try {
@@ -34,7 +33,7 @@ router.get("/cities/list", async (_req, res) => {
 });
 
 /**
- * 🔹 Tüm oteller (filtreleme, sıralama, sayfalama)
+ * Tüm oteller (filtreleme, sıralama, sayfalama)
  */
 router.get("/", async (req, res) => {
   try {
@@ -111,7 +110,7 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * 🔹 Belirli otel getir
+ * Belirli otel getir
  */
 router.get("/:id", async (req, res) => {
   try {
@@ -153,7 +152,7 @@ router.get("/:id", async (req, res) => {
 });
 
 /**
- * 🔹 Yeni otel ekle (HOTEL_OWNER + SUPPORT)
+ * Yeni otel ekle (HOTEL_OWNER + SUPPORT)
  */
 router.post(
   "/",
@@ -201,7 +200,7 @@ router.post(
 );
 
 /**
- * 🔹 Otel güncelle (owner veya SUPPORT)
+ * Otel güncelle (owner veya SUPPORT)
  */
 router.put("/:id", authenticateToken, async (req, res) => {
   try {
@@ -251,7 +250,7 @@ router.put("/:id", authenticateToken, async (req, res) => {
 });
 
 /**
- * 🔹 Otel sil (owner veya SUPPORT, aktif rezervasyon olmamalı)
+ * Otel sil (owner veya SUPPORT, aktif rezervasyon olmamalı)
  */
 router.delete("/:id", authenticateToken, async (req, res) => {
   try {
