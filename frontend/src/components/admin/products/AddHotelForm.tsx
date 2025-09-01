@@ -108,6 +108,36 @@ const AddHotelForm: React.FC<AddHotelFormProps> = ({ onSubmit, onCancel }) => {
     }
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const files = Array.from(e.dataTransfer.files);
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        images: [...prev.images, ...imageFiles]
+      }));
+    }
+  };
+
   const removeImage = (index: number) => {
     setFormData(prev => ({
       ...prev,
@@ -231,19 +261,28 @@ const AddHotelForm: React.FC<AddHotelFormProps> = ({ onSubmit, onCancel }) => {
               <CardContent className="p-6">
                 <div className="space-y-3">
                   <Label className="text-sm font-medium text-gray-700">Star Rating *</Label>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
                         type="button"
                         onClick={() => setFormData(prev => ({ ...prev, stars: star }))}
-                        className={`p-1 rounded ${
-                          formData.stars >= star ? 'text-yellow-400' : 'text-gray-300'
+                        className={`p-1 rounded hover:scale-110 transition-all duration-200 ${
+                          formData.stars >= star 
+                            ? 'text-yellow-400 hover:text-yellow-500' 
+                            : 'text-gray-300 hover:text-gray-400'
                         }`}
                       >
-                        <Star className="h-6 w-6 fill-current" />
+                        <Star 
+                          className={`h-6 w-6 ${
+                            formData.stars >= star ? 'fill-yellow-400' : 'fill-none'
+                          }`} 
+                        />
                       </button>
                     ))}
+                    <span className="ml-2 text-sm font-medium text-gray-600">
+                      ({formData.stars} {formData.stars === 1 ? 'yıldız' : 'yıldız'})
+                    </span>
                   </div>
                   <p className="text-xs text-gray-500">
                     {formData.stars} yıldızlı otel
@@ -408,7 +447,14 @@ const AddHotelForm: React.FC<AddHotelFormProps> = ({ onSubmit, onCancel }) => {
                 </div>
 
                 {/* Upload Area */}
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <div 
+                  className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer"
+                  onClick={() => document.getElementById('image-upload')?.click()}
+                  onDragOver={handleDragOver}
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
                   <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                   <p className="text-sm text-gray-600 mb-2">
                     Drop your images here or click to browse
@@ -421,11 +467,17 @@ const AddHotelForm: React.FC<AddHotelFormProps> = ({ onSubmit, onCancel }) => {
                     className="hidden"
                     id="image-upload"
                   />
-                  <label htmlFor="image-upload">
-                    <Button variant="outline" className="cursor-pointer">
-                      Select Images
-                    </Button>
-                  </label>
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    className="cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      document.getElementById('image-upload')?.click();
+                    }}
+                  >
+                    Select Images
+                  </Button>
                 </div>
 
                 <p className="text-xs text-gray-500">
