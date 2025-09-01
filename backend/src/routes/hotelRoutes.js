@@ -79,7 +79,7 @@ router.get("/", async (req, res) => {
         owner: { select: { user_id: true, name: true, email: true } },
         images: true,
         _count: { select: { rooms: true, reservations: true } },
-        ratings: { select: { value: true } }, // ⭐ tüm ratingleri al
+        ratings: { select: { score: true } }, // ⭐ tüm ratingleri al
       },
       orderBy: { [safeSortBy]: safeSortOrder },
       skip,
@@ -87,7 +87,7 @@ router.get("/", async (req, res) => {
     });
 
     const hotelsWithAvg = hotels.map((hotel) => {
-      const ratings = hotel.ratings.map((r) => r.value);
+      const ratings = hotel.ratings.map((r) => r.score);
       const avg =
         ratings.length > 0
           ? ratings.reduce((a, b) => a + b, 0) / ratings.length
@@ -146,7 +146,7 @@ router.get("/:id", async (req, res) => {
           take: 5,
           orderBy: { created_at: "desc" },
         },
-        ratings: { select: { value: true } }, // ⭐ ratingleri al
+        ratings: { select: { score: true } }, // ⭐ ratingleri al
       },
     });
 
@@ -154,7 +154,7 @@ router.get("/:id", async (req, res) => {
       return res.status(404).json({ success: false, error: "Otel bulunamadı" });
     }
 
-    const ratings = hotel.ratings.map((r) => r.value);
+    const ratings = hotel.ratings.map((r) => r.score);
     const avg =
       ratings.length > 0
         ? ratings.reduce((a, b) => a + b, 0) / ratings.length
