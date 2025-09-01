@@ -41,6 +41,7 @@ model User {
 
   messagesSent Message[]      @relation("MessageSender")
   chats        ChatParticipant[]
+  ratings      Rating[]
 }
 
 model Hotel {
@@ -49,7 +50,8 @@ model Hotel {
   city         String
   address      String
   description  String?
-  rating       Float?
+  rating_avg     Float    @default(0) 
+  rating_count   Int      @default(0)
   owner_id     Int
   owner        User     @relation("UserHotels", fields: [owner_id], references: [user_id])
   rooms        Room[]
@@ -59,6 +61,7 @@ model Hotel {
 
   main_image_url  String?
   main_image_path String?
+  ratings      Rating[]
 }
 
 model Room {
@@ -89,6 +92,7 @@ model Reservation {
   status         ReservationStatus @default(PENDING)
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
+  special_requests String?
 }
 
 model Image {
@@ -129,4 +133,17 @@ model Message {
 
   chat   Chat @relation(fields: [chat_id], references: [chat_id])
   sender User @relation("MessageSender", fields: [sender_id], references: [user_id])
+}
+
+model Rating {
+  rating_id   Int      @id @default(autoincrement())
+  hotel_id    Int
+  user_id     Int
+  score       Int      // 1–5 arası
+  created_at  DateTime @default(now())
+
+  hotel Hotel @relation(fields: [hotel_id], references: [hotel_id])
+  user  User  @relation(fields: [user_id], references: [user_id])
+
+  @@unique([user_id, hotel_id]) 
 }

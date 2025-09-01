@@ -1,4 +1,3 @@
-// routes/reservationRoutes.js
 import express from "express";
 import prisma from "../config/db.js";
 import { authenticateToken } from "../middlewares/authMiddleware.js";
@@ -59,10 +58,11 @@ router.get("/", authenticateToken, async (req, res) => {
 /**
  * Yeni rezervasyon oluştur
  * quantity dikkate alınıyor → aynı odadan en fazla quantity kadar rezervasyon yapılabilir
+ * special_requests → opsiyonel, kullanıcı özel not bırakabilir
  */
 router.post("/", authenticateToken, async (req, res) => {
   try {
-    const { hotel_id, room_id, start_date, end_date } = req.body;
+    const { hotel_id, room_id, start_date, end_date, special_requests } = req.body;
     const user_id = Number(req.user.user_id);
 
     if (!hotel_id || !room_id || !start_date || !end_date) {
@@ -78,7 +78,7 @@ router.post("/", authenticateToken, async (req, res) => {
       return res.status(404).json({ success: false, error: "Oda bulunamadı" });
     }
 
-    // Bu oda için aynı tarih aralığında kaç aktif rezervasyon var?
+    // Aynı tarih aralığında çakışan rezervasyon kontrolü
     const overlappingReservations = await prisma.reservation.count({
       where: {
         room_id: Number(room_id),
@@ -92,7 +92,7 @@ router.post("/", authenticateToken, async (req, res) => {
       return res.status(400).json({ success: false, error: "Seçilen tarihlerde oda dolu" });
     }
 
-    // Gece sayısı
+    // Gece sayısı & toplam fiyat
     const nights = Math.max(
       1,
       Math.ceil((new Date(end_date) - new Date(start_date)) / (1000 * 60 * 60 * 24))
@@ -109,6 +109,7 @@ router.post("/", authenticateToken, async (req, res) => {
         end_date: new Date(end_date),
         total_price,
         status: "PENDING",
+        special_requests: special_requests || null,
       },
       include: { hotel: true, room: true },
     });
@@ -176,7 +177,7 @@ router.patch("/:id/status", authenticateToken, async (req, res) => {
 });
 
 /**
- * 🔹 Rezervasyon detay
+ * Rezervasyon detay
  */
 router.get("/:id", authenticateToken, async (req, res) => {
   try {

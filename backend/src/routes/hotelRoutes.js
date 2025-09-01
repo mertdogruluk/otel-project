@@ -1,4 +1,3 @@
-// routes/hotelRoutes.js
 import express from "express";
 import prisma from "../config/db.js";
 import {
@@ -34,6 +33,7 @@ router.get("/cities/list", async (_req, res) => {
 
 /**
  * Tüm oteller (filtreleme, sıralama, sayfalama)
+ * Ortalama rating bilgisi eklenmiş
  */
 router.get("/", async (req, res) => {
   try {
@@ -47,14 +47,12 @@ router.get("/", async (req, res) => {
       sortOrder = "desc",
     } = req.query;
 
-    // Güvenli sıralama
     const allowedSortFields = ["created_at", "name", "city", "rating"];
     const safeSortBy = allowedSortFields.includes(sortBy)
       ? sortBy
       : "created_at";
     const safeSortOrder = sortOrder === "asc" ? "asc" : "desc";
 
-    // Filtre koşulları
     const where = {};
     if (city) {
       where.city = { contains: city, mode: "insensitive" };
@@ -81,10 +79,24 @@ router.get("/", async (req, res) => {
         owner: { select: { user_id: true, name: true, email: true } },
         images: true,
         _count: { select: { rooms: true, reservations: true } },
+        ratings: { select: { value: true } }, // ⭐ tüm ratingleri al
       },
       orderBy: { [safeSortBy]: safeSortOrder },
       skip,
       take: parseInt(limit),
+    });
+
+    const hotelsWithAvg = hotels.map((hotel) => {
+      const ratings = hotel.ratings.map((r) => r.value);
+      const avg =
+        ratings.length > 0
+          ? ratings.reduce((a, b) => a + b, 0) / ratings.length
+          : null;
+
+      return {
+        ...hotel,
+        average_rating: avg,
+      };
     });
 
     const totalHotels = await prisma.hotel.count({ where });
@@ -92,7 +104,7 @@ router.get("/", async (req, res) => {
 
     res.json({
       success: true,
-      data: hotels,
+      data: hotelsWithAvg,
       pagination: {
         current: parseInt(page),
         total: totalPages,
@@ -110,7 +122,7 @@ router.get("/", async (req, res) => {
 });
 
 /**
- * Belirli otel getir
+ * Belirli otel getir (ortalama rating ile birlikte)
  */
 router.get("/:id", async (req, res) => {
   try {
@@ -134,6 +146,7 @@ router.get("/:id", async (req, res) => {
           take: 5,
           orderBy: { created_at: "desc" },
         },
+        ratings: { select: { value: true } }, // ⭐ ratingleri al
       },
     });
 
@@ -141,7 +154,19 @@ router.get("/:id", async (req, res) => {
       return res.status(404).json({ success: false, error: "Otel bulunamadı" });
     }
 
-    res.json({ success: true, data: hotel });
+    const ratings = hotel.ratings.map((r) => r.value);
+    const avg =
+      ratings.length > 0
+        ? ratings.reduce((a, b) => a + b, 0) / ratings.length
+        : null;
+
+    res.json({
+      success: true,
+      data: {
+        ...hotel,
+        average_rating: avg,
+      },
+    });
   } catch (err) {
     console.error("Get hotel error:", err);
     res.status(500).json({
@@ -152,7 +177,7 @@ router.get("/:id", async (req, res) => {
 });
 
 /**
- * Yeni otel ekle (HOTEL_OWNER + SUPPORT)
+ * Yeni otel ekle
  */
 router.post(
   "/",
@@ -200,7 +225,7 @@ router.post(
 );
 
 /**
- * Otel güncelle (owner veya SUPPORT)
+ * Otel güncelle
  */
 router.put("/:id", authenticateToken, async (req, res) => {
   try {
@@ -226,7 +251,6 @@ router.put("/:id", authenticateToken, async (req, res) => {
         city: req.body.city,
         address: req.body.address,
         description: req.body.description,
-        rating: req.body.rating ? parseFloat(req.body.rating) : undefined,
       },
       include: {
         owner: { select: { user_id: true, name: true, email: true } },
@@ -250,7 +274,7 @@ router.put("/:id", authenticateToken, async (req, res) => {
 });
 
 /**
- * Otel sil (owner veya SUPPORT, aktif rezervasyon olmamalı)
+ * Otel sil
  */
 router.delete("/:id", authenticateToken, async (req, res) => {
   try {

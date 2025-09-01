@@ -1,4 +1,3 @@
-// routes/roomRoutes.js
 import express from "express";
 import prisma from "../config/db.js";
 import { authenticateToken, authorizeRoles } from "../middlewares/authMiddleware.js";
