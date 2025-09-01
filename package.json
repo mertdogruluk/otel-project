@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "jest": "^30.0.5"
+  },
+  "dependencies": {
+    "multer": "^2.0.2"
   }
 }
