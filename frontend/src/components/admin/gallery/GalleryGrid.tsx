@@ -235,7 +235,7 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
                       value=""
                       readOnly
                       className="flex-1 text-xs"
-                      placeholder="URL will be displayed here"
+                      placeholder=""
                     />
                     <Button variant="outline" size="sm">
                       <Copy className="h-4 w-4" />

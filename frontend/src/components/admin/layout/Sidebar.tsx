@@ -50,8 +50,7 @@ const allPageItems: MenuItem[] = [
     hasDropdown: true,
     children: [
       { id: 'add-product', title: 'Add Product', icon: ShoppingCart, href: '/products/add' },
-      { id: 'product-list', title: 'Product List', icon: ShoppingCart, href: 'javascript:void(0)' },
-      { id: 'orders', title: 'Order List', icon: FileText, href: 'javascript:void(0)' },
+      { id: 'product-list', title: 'Product List', icon: ShoppingCart, href: '/products/list' },
     ]
   },
   {
@@ -64,16 +63,7 @@ const allPageItems: MenuItem[] = [
       { id: 'new-category', title: 'New Category', icon: Layers, href: '/categories/new' },
     ]
   },
-  {
-    id: 'attributes',
-    title: 'Attributes',
-    icon: Database,
-    hasDropdown: true,
-    children: [
-      { id: 'all-attributes', title: 'All Attributes', icon: Database, href: 'javascript:void(0)' },
-      { id: 'add-attribute', title: 'Add Attribute', icon: Database, href: 'javascript:void(0)' },
-    ]
-  },
+
   {
     id: 'order',
     title: 'Order',
