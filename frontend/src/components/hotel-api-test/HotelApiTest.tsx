@@ -4,7 +4,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useHotels, useHotel, useCreateReservation } from '@/hooks/useAPI';
+import { useHotels, useHotel, useCreateReservation } from '@/hooks/useHotels';
 import { APIHotel, APIHotelRoom, APIHotelImage } from '@/types/hotel';
 
 const APITest: React.FC = () => {
