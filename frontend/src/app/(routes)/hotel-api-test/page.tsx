@@ -1,10 +1,10 @@
 import React from 'react'
-import APITest from '@/components/API-Test'
+import HotelApiTest from '@/components/hotel-api-test/HotelApiTest'
 
 function HotelAPITestPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <APITest />
+      <HotelApiTest /> 
     </div>
   )
 }
