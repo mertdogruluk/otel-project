@@ -61,6 +61,7 @@ class AuthController {
           email,
           password: hashedPassword,
           role: userRole,
+          is_online: false, 
         },
       });
 
@@ -120,6 +121,11 @@ class AuthController {
           error: "Geçersiz email veya şifre",
         });
       }
+      // is_online=true
+    await prisma.user.update({
+      where: { user_id: user.user_id },
+      data: { is_online: true },
+    });
 
       const token = jwt.sign(
         { user_id: user.user_id, email: user.email, role: user.role },
@@ -245,6 +251,21 @@ class AuthController {
    * Çıkış yap
    */
   async logout(req, res) {
+   try {
+    const { user_id } = req.user;
+
+    //is_online = false 
+    await prisma.user.update({
+      where: { user_id },
+      data: { is_online: false },
+    });
+    } catch (error) {
+    console.error("Logout error:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Çıkış işlemi başarısız",
+    });
+  }
     return res.json({
       success: true,
       message: "Başarıyla çıkış yapıldı",

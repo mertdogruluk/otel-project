@@ -100,6 +100,9 @@ io.on("connection", (socket) => {
   onlineUsers.set(userId, socket.id);
   prisma.user
     .update({ where: { user_id: userId }, data: { is_online: true } })
+     .then(() => {
+      console.log(` ${name} (#${userId}) artık ONLINE`);
+    })
     .catch(console.error);
 
   socket.join(`notify:${userId}`);
@@ -108,7 +111,9 @@ io.on("connection", (socket) => {
    socket.on("disconnect", () => {
     console.log(`❌ Disconnected: ${name} (${role}) #${userId}`);
     onlineUsers.delete(userId);
-    prisma.user.update({ where: { user_id: userId }, data: { is_online: false } }).catch(console.error);
+    prisma.user.update({ where: { user_id: userId }, data: { is_online: false } })
+    .then(() => console.log(` ${name} (#${userId}) artık OFFLINE`))
+    .catch(console.error);
   });
   // --- Chat join
   socket.on("chat:join", async ({ targetUserId }, ack) => {
@@ -127,6 +132,7 @@ io.on("connection", (socket) => {
       if (!allowed) throw new Error("Sohbete erişim yetkiniz yok");
 
       socket.join(`chat:${chatId}`);
+       console.log(` ${name} (#${userId}) chat:${chatId} odasına katıldı`);
       ack?.({ ok: true, chatId });
     } catch (err) {
       console.error("chat:join error", err);
@@ -153,6 +159,7 @@ io.on("connection", (socket) => {
       });
       //tüm katılımcılara mesaj gönder
       io.to(`chat:${chatIdNum}`).emit("message:new", saved);
+      console.log(` ${name} (#${userId}) chat:${chatIdNum} mesaj gönderdi: "${content.trim()}"`);
     //karşı tarafı al
       const others = await getCounterpartIds(chatIdNum, userId);
 
@@ -212,6 +219,7 @@ for (const otherId of others) {
     socket
       .to(`chat:${chatIdNum}`)
       .emit("typing", { userId, typing: !!typing });
+      console.log(` ${name} (#${userId}) chat:${chatIdNum} ${typing ? "yazıyor..." : "yazmayı bıraktı"}`);
   });
 
 }); 
