@@ -1,9 +1,11 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BellDot, Globe, Heart, Mic, Moon, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +14,34 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+import { userManager, authHelpers } from "@/utils/auth";
+import { useLogout } from "@/hooks/useAuth";
 
 function Header() {
+  const router = useRouter();
+  const { mutate: logout } = useLogout();
+  const [isClient, setIsClient] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    setIsClient(true);
+    const user = userManager.getUser();
+    setUserName(user?.name ?? null);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logout(undefined as unknown as void);
+    } catch (e) {
+      // ignore API error, proceed to clear local state
+    } finally {
+      authHelpers.clearAuth();
+      setUserName(null);
+      router.push("/");
+    }
+  };
+
   return (
     <header className="bg-white shadow-md px-24 py-5 relative z-50">
       <div className="flex justify-between items-center mx-auto flex-wrap">
@@ -49,7 +77,8 @@ function Header() {
 
         {/* Navbar Links */}
         <nav>
-          <div className="flex flex-row gap-1">
+          <div className="flex flex-row items-center gap-1">
+            {/* Common icons remain */}
             <Link href="/">
               <Button variant="ghost" className="cursor-pointer">
                 <Heart className="w-6 h-6 text-[#486284]" />
@@ -77,26 +106,40 @@ function Header() {
               </div>
             </Link>
 
-            {/* Dropdown Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Image
-                  src="/images/user-image.png"
-                  width={35}
-                  height={35}
-                  alt="user"
-                  className="cursor-pointer"
-                />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Billing</DropdownMenuItem>
-                <DropdownMenuItem>Team</DropdownMenuItem>
-                <DropdownMenuItem>Subscription</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Auth area */}
+            {isClient && authHelpers.isLoggedIn() && userName ? (
+              <div className="flex items-center gap-3 ml-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <div className="flex items-center gap-2">
+                      <Image
+                        src="/images/user-image.png"
+                        width={35}
+                        height={35}
+                        alt="user"
+                        className="cursor-pointer rounded-full"
+                      />
+                      <span className="text-sm font-medium text-[#486284]">{userName}</span>
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>Hesap</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => router.push("/profile")}>Profil</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout}>Çıkış Yap</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 ml-2">
+                <Link href="/auth/login">
+                  <Button className="bg-[#2F6FED] hover:bg-[white] hover:text-[#2F6FED] hover:border-[#2F6FED] border-1 text-white font-opensans font-bold cursor-pointer">Giriş Yap</Button>
+                </Link>
+                <Link href="/auth/register">
+                  <Button variant="outline" className="bg-white border border-[#2F6FED] hover:bg-[#2F6FED] hover:text-white text-[#2F6FED] font-opensans font-bold cursor-pointer">Kayıt Ol</Button>
+                </Link>
+              </div>
+            )}
           </div>
         </nav>
       </div>

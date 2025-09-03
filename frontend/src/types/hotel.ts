@@ -81,3 +81,59 @@ export interface HotelSearchResult {
   totalPages: number;
   filters: HotelFilters;
 }
+
+// API Hotel interfaces (for backend data)
+export interface APIHotelOwner {
+  user_id: number;
+  name: string;
+  email: string;
+  phone?: string;
+  role: string;
+}
+
+export interface APIHotelRoom {
+  room_id: number;
+  name: string;
+  capacity: number;
+  price: number;
+  available: boolean;
+  description?: string;
+  amenities?: string[];
+}
+
+export interface APIHotelImage {
+  image_id?: number;
+  url?: string;
+  image_url?: string;
+  alt_text?: string;
+}
+
+export interface APIHotel {
+  hotel_id: number;
+  name: string;
+  city: string;
+  address: string;
+  description?: string;
+  average_rating?: number;
+  owner?: APIHotelOwner;
+  rooms?: APIHotelRoom[];
+  images?: APIHotelImage[];
+  _count?: {
+    rooms?: number;
+    reservations?: number;
+  };
+}
+
+export interface APIReservation {
+  reservation_id: number;
+  hotel_id: number;
+  room_id: number;
+  user_id: number;
+  start_date: string;
+  end_date: string;
+  guest_count: number;
+  total_price: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}

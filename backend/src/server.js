@@ -23,7 +23,7 @@ import {
 } from "./services/chatService.js";
 import { saveMessage } from "./services/messageService.js";
 import imageRoutes from "./routes/imageRoutes.js";
-import ratingRoutes from "./routes/ratingRoutes.js"; 
+import reviewRoutes from "./routes/reviewRoutes.js"; 
 
 const app = express();
 const server = http.createServer(app);
@@ -45,7 +45,7 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/hotels", hotelRoutes);
 app.use("/api/reservations", reservationRoutes);
 app.use("/api/images", imageRoutes);
-app.use("/api/ratings", ratingRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.get("/", (_req, res) => res.send("API çalışıyor"));
 

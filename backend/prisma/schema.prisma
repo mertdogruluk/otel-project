@@ -1,6 +1,6 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -8,7 +8,24 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum MessageStatus{
+enum Amenity {
+  FREE_CANCELLATION  
+  BREAKFAST
+  PARKING            
+}
+
+
+
+enum HotelCategory {
+  HOTEL
+  VILLA
+  APART
+  HOSTEL
+  BUNGALOV
+  PANSION
+}
+
+enum MessageStatus {
   SEND
   DELIVERED
   READ
@@ -17,7 +34,7 @@ enum MessageStatus{
 enum UserRole {
   CUSTOMER
   HOTEL_OWNER
-  SUPPORT
+  SUPPORT 
 }
 
 enum ReservationStatus {
@@ -41,7 +58,7 @@ model User {
 
   messagesSent Message[]      @relation("MessageSender")
   chats        ChatParticipant[]
-  ratings      Rating[]
+  reviews      Review[]      
 }
 
 model Hotel {
@@ -50,18 +67,35 @@ model Hotel {
   city         String
   address      String
   description  String?
-  rating_avg     Float    @default(0) 
-  rating_count   Int      @default(0)
+
+  rating_avg   Float    @default(0) 
+  rating_count Int      @default(0)
+
   owner_id     Int
   owner        User     @relation("UserHotels", fields: [owner_id], references: [user_id])
   rooms        Room[]
   reservations Reservation[] @relation("HotelReservations")
   images       Image[]
+  reviews      Review[]   
   created_at   DateTime @default(now())
 
   main_image_url  String?
   main_image_path String?
-  ratings      Rating[]
+
+  
+  tag        String?          
+  amenities  Amenity[]         
+  phone      String?
+  email      String?
+  website    String?
+  checkIn    String?
+  checkOut   String?
+  policies   String[]
+  latitude   Float?
+  longitude  Float?
+  category   HotelCategory?   
+  stars      Int?             
+  facilities String[]         
 }
 
 model Room {
@@ -79,29 +113,29 @@ model Room {
 }
 
 model Reservation {
-  reservation_id Int      @id @default(autoincrement())
-  user_id        Int
-  user           User     @relation("UserReservations", fields: [user_id], references: [user_id])
-  hotel_id       Int
-  hotel          Hotel    @relation("HotelReservations", fields: [hotel_id], references: [hotel_id])
-  room_id        Int
-  room           Room     @relation(fields: [room_id], references: [room_id])
-  start_date     DateTime
-  end_date       DateTime
-  total_price    Float?
-  status         ReservationStatus @default(PENDING)
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+  reservation_id   Int      @id @default(autoincrement())
+  user_id          Int
+  user             User     @relation("UserReservations", fields: [user_id], references: [user_id])
+  hotel_id         Int
+  hotel            Hotel    @relation("HotelReservations", fields: [hotel_id], references: [hotel_id])
+  room_id          Int
+  room             Room     @relation(fields: [room_id], references: [room_id])
+  start_date       DateTime
+  end_date         DateTime
+  total_price      Float?
+  status           ReservationStatus @default(PENDING)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
   special_requests String?
 }
 
 model Image {
-  image_id   Int      @id @default(autoincrement())
-  hotel_id   Int
-  hotel      Hotel    @relation(fields: [hotel_id], references: [hotel_id])
-  url        String
+  image_id    Int      @id @default(autoincrement())
+  hotel_id    Int
+  hotel       Hotel    @relation(fields: [hotel_id], references: [hotel_id])
+  url         String
   storage_path String
-  created_at DateTime @default(now())
+  created_at  DateTime @default(now())
 }
 
 model Chat {
@@ -132,14 +166,15 @@ model Message {
   status      MessageStatus @default(SEND)
 
   chat   Chat @relation(fields: [chat_id], references: [chat_id])
-  sender User @relation("MessageSender", fields: [sender_id], references: [user_id])
+  sender User @relation("MessageSender", fields: [sender_id], references: [user_id])
 }
 
-model Rating {
-  rating_id   Int      @id @default(autoincrement())
+model Review {
+  review_id   Int      @id @default(autoincrement())
   hotel_id    Int
   user_id     Int
-  score       Int      // 1–5 arası
+  score       Int      
+  comment     String?  
   created_at  DateTime @default(now())
 
   hotel Hotel @relation(fields: [hotel_id], references: [hotel_id])
