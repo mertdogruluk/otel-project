@@ -9,6 +9,9 @@ export const getChatMessages = async (req, res) => {
   try {
     const userId = req.user.user_id;
     const chatId = Number(req.params.chatId);
+    const take = Number(req.query.take) || 100;
+    const cursor = req.query.cursor ? Number(req.query.cursor) : undefined;
+
     if (!Number.isFinite(chatId)) {
       return res.status(400).json({ ok: false, error: "Geçersiz chatId" });
     }
@@ -77,7 +80,7 @@ export const sendMessage = async (req, res) => {
   } catch (err) {
    
     console.error("sendMessage hatası:", err);
-    return res.status(500).json({ ok: false, error: "Mesaj silinirken bir hata oluştu. Lütfen daha sonra tekrar deneyin." });
+    return res.status(500).json({ ok: false, error: "Mesaj gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin." });
   }  
 };
 //mesajı sil
@@ -86,7 +89,16 @@ export const deleteMessage = async (req, res) => {
     const messageId = Number(req.params.messageId);
     //messageId kontrolü
     if (!messageId) return res.status(400).json({ ok: false, error: "Geçersiz messageId. Lütfen geçerli bir mesaj ID'si sağlayın." });
+    // Mesaj var mı kontrol 
+   const message = await prisma.message.findUnique({ where: { message_id: messageId } });
+    if (!message) {
+      return res.status(404).json({ ok: false, error: "Mesaj bulunamadı." });
+    }
 
+    // Sadece mesaj sahibi veya SUPPORT rolü silebilir
+    if (req.user.user_id !== message.sender_id && req.user.role !== "SUPPORT") {
+      return res.status(403).json({ ok: false, error: "Bu mesajı silme yetkiniz yok." });
+    }
     const deleted = await prisma.message.delete({
       where: { message_id: messageId }
     });
