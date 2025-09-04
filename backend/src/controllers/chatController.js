@@ -45,8 +45,8 @@ export const getCounterparts = async (req, res) => {
     const userId = req.user.user_id;
     const chatId = Number(req.params.chatId);
 
-    const ids = await getCounterpartIds(chatId, userId);
-    return res.json({ ok: true, counterparts: ids });
+    const participants = await getCounterpartIds(chatId, userId);
+    return res.json({ ok: true, counterparts: participants });
   } catch (err) {
     return res.status(500).json({ ok: false, error: err.message });
   }
